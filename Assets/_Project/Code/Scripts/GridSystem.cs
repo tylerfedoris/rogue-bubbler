@@ -27,23 +27,19 @@ public class GridSystem : MonoBehaviour
         Narrow
     }
     
-    [SerializeField]
-    private GridWidth _gridWidth = GridWidth.Narrow;
+    [SerializeField] private GridWidth _gridWidth = GridWidth.Narrow;
     
-    [SerializeField]
-    private GameObject _cellPrefab;
+    [SerializeField] private GameObject _cellPrefab;
 
-    [SerializeField]
-    private Boundaries _boundaries;
+    [SerializeField] private GameObject[] _bubblePrefabs;
+    
+    [SerializeField] private GameObject _blockerPrefab;
+
+    [SerializeField] private Boundaries _boundaries;
 
     private GameObject[][] _grid;
     private float _cellSize;
     private GridDimensions _gridDimensions;
-
-    private void Awake()
-    {
-        SetBoundaryPositionAndScale();
-    }
 
     // Start is called before the first frame update
     private void Start()
