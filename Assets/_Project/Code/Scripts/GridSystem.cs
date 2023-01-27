@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridSystem : MonoBehaviour
@@ -88,6 +89,8 @@ public class GridSystem : MonoBehaviour
             }
         }
 
+        LinkConnectedCells();
+
         GenerateBubbles();
     }
 
@@ -134,7 +137,7 @@ public class GridSystem : MonoBehaviour
         }
     }
 
-    private void LinkConnectedBubbles()
+    private void LinkConnectedCells()
     {
         for (var row = 0; row < _grid.Length; row++)
         {
@@ -143,20 +146,18 @@ public class GridSystem : MonoBehaviour
                 var gridCell = GetGridCell(row, column);
                 if (gridCell)
                 {
-                    GetConnectedBubbles(ref gridCell, row, column);
+                    GetConnectedCells(ref gridCell, row, column);
                 }
             }
         }
     }
 
-    private void GetConnectedBubbles(ref GridCell gridCell, int row, int column)
+    private void GetConnectedCells(ref GridCell gridCell, int row, int column)
     {
-        if (!gridCell.Bubble)
+        if (gridCell.ConnectedCells.Count > 0)
         {
-            return;
+            gridCell.ClearConnectedCells();   
         }
-        
-        gridCell.ClearConnectedBubbles();
 
         bool isRowEven = row % 2 == 0;
         var positionsToCheck = new List<Vector2Int>
@@ -169,18 +170,9 @@ public class GridSystem : MonoBehaviour
             new(row + 1, isRowEven ? column - 1 : column + 1),
         };
 
-        foreach (var position in positionsToCheck)
+        foreach (var position in positionsToCheck.Where(position => IsValidGridPosition(position.x, position.y)))
         {
-            if (!IsValidGridPosition(position.x, position.y))
-            {
-                continue;
-            }
-            
-            var bubble = _grid[position.x][position.y].GetComponent<GridCell>().Bubble;
-            if (bubble)
-            {
-                gridCell.AddConnectedBubble(bubble);
-            }
+            gridCell.AddConnectedCell(_grid[position.x][position.y]);
         }
     }
 

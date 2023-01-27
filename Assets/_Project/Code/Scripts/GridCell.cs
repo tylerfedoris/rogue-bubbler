@@ -11,7 +11,7 @@ public class GridCell : MonoBehaviour
     
     [SerializeField] private GameObject _bubble;
 
-    [SerializeField] private List<GameObject> _connectedBubbles = new();
+    [SerializeField] private List<GameObject> _connectedCells = new();
 
     public Vector2Int GridPosition
     {
@@ -25,10 +25,10 @@ public class GridCell : MonoBehaviour
         set => _bubble = value;
     }
     
-    public List<GameObject> ConnectedBubbles
+    public List<GameObject> ConnectedCells
     {
-        get => _connectedBubbles;
-        set => _connectedBubbles = value;
+        get => _connectedCells;
+        set => _connectedCells = value;
     }
 
     // Start is called before the first frame update
@@ -43,13 +43,13 @@ public class GridCell : MonoBehaviour
 
     }
 
-    public void AddConnectedBubble(GameObject bubble)
+    public void AddConnectedCell(GameObject cell)
     {
-        _connectedBubbles.Add(bubble);
+        _connectedCells.Add(cell);
     }
 
-    public void ClearConnectedBubbles()
+    public void ClearConnectedCells()
     {
-        _connectedBubbles.Clear();
+        _connectedCells.Clear();
     }
 }
