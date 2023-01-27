@@ -40,6 +40,9 @@ public class GridSystem : MonoBehaviour
     private GameObject[][] _grid;
     private float _cellSize;
     private GridDimensions _gridDimensions;
+    private int _totalCells;
+    
+    [SerializeField] private int _currentLevel = 1;
 
     // Start is called before the first frame update
     private void Start()
@@ -58,6 +61,7 @@ public class GridSystem : MonoBehaviour
         _cellSize = _cellPrefab.transform.localScale.x;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
+        _totalCells = (_gridDimensions.MaxRows * _gridDimensions.MaxColumns) - (_gridDimensions.MaxRows / 2);
         _grid = new GameObject[_gridDimensions.MaxRows][];
 
         SetBoundaryPositionAndScale();
@@ -81,13 +85,10 @@ public class GridSystem : MonoBehaviour
                 
                 var gridCell = cell.GetComponent<GridCell>();
                 gridCell.GridPosition = new Vector2Int(row, column);
-                
-                var randomIndex = UnityEngine.Random.Range(0, _bubblePrefabs.Length);
-                gridCell.Bubble = Instantiate(_bubblePrefabs[randomIndex], cell.transform);
             }
         }
 
-        LinkConnectedBubbles();
+        GenerateBubbles();
     }
 
     private void SetBoundaryPositionAndScale()
@@ -113,13 +114,33 @@ public class GridSystem : MonoBehaviour
         bottomBoundaryTransform.localScale = new Vector3(bottomBoundaryScale.x,_gridWidth == GridWidth.Narrow ? 6f : 8.5f, bottomBoundaryScale.z);
     }
 
+    private void GenerateBubbles()
+    {
+        var randomSpawnInterval = GetSpawnInterval();
+        int numBubblesToSpawn = UnityEngine.Random.Range(randomSpawnInterval.x, randomSpawnInterval.y);
+        int numFirstRowColumns = _grid[0].Length;
+        int numBubblesInFirstRow = UnityEngine.Random.Range(numFirstRowColumns / 3, numFirstRowColumns);
+        
+        Debug.LogFormat("randomSpawnInterval: {0}, numBubblesToSpawn: {1}, numBubblesInFirstRow: {2}, numFirstRowColumns: {3}", 
+            randomSpawnInterval, numBubblesToSpawn, numBubblesInFirstRow, numFirstRowColumns);
+        
+        var columnsToPlaceBubbles = Helpers.GenerateRandomUniqueNumberList(numBubblesInFirstRow, 0, numFirstRowColumns);
+        foreach (int column in columnsToPlaceBubbles)
+        {
+            Debug.LogFormat("placed in column: {0}", column);
+            var gridCell = GetGridCell(0, column);
+            var bubbleToSpawn = _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
+            gridCell.Bubble = Instantiate(bubbleToSpawn, gridCell.transform);
+        }
+    }
+
     private void LinkConnectedBubbles()
     {
         for (var row = 0; row < _grid.Length; row++)
         {
             for (var column = 0; column < _grid[row].Length; column++)
             {
-                var gridCell = _grid[row][column].GetComponent<GridCell>();
+                var gridCell = GetGridCell(row, column);
                 if (gridCell)
                 {
                     GetConnectedBubbles(ref gridCell, row, column);
@@ -166,5 +187,25 @@ public class GridSystem : MonoBehaviour
     private bool IsValidGridPosition(int row, int column)
     {
         return row >= 0 && row < _grid.Length && column >= 0 && column < _grid[row].Length;
+    }
+
+    private Vector2Int GetSpawnInterval()
+    {
+        return _currentLevel switch
+        {
+            >= 1 and <= 5 => new Vector2Int(Mathf.CeilToInt(_totalCells / 8f), Mathf.CeilToInt(_totalCells / 4f) + 1),
+            >= 6 and <= 10 => new Vector2Int(Mathf.CeilToInt(_totalCells / 6f), Mathf.CeilToInt(_totalCells / 4f) + 1),
+            >= 11 and <= 15 => new Vector2Int(Mathf.CeilToInt(_totalCells / 5f), Mathf.CeilToInt(_totalCells / 3f) + 1),
+            >= 16 and <= 20 => new Vector2Int(Mathf.CeilToInt(_totalCells / 4f), Mathf.CeilToInt(_totalCells / 3f) + 1),
+            >= 21 and <= 25 => new Vector2Int(Mathf.CeilToInt(_totalCells / 4f), Mathf.CeilToInt(_totalCells / 2f) + 1),
+            >= 26 and <= 30 => new Vector2Int(Mathf.CeilToInt(_totalCells / 3f), Mathf.CeilToInt(_totalCells / 2f) + 1),
+            >= 31 => new Vector2Int(Mathf.CeilToInt(_totalCells / 2f), Mathf.CeilToInt(_totalCells / 2f) + 1),
+            _ => new Vector2Int(0, 0)
+        };
+    }
+
+    private GridCell GetGridCell(int row, int column)
+    {
+        return _grid[row][column].GetComponent<GridCell>();
     }
 }
