@@ -7,12 +7,22 @@ using Random = System.Random;
 
 public static class Helpers
 {
-    public static List<int> GenerateRandomUniqueNumberList(int count, int min, int max)
+    public static List<int> GenerateRandomUniqueIndexes(int pickCount, int numElements)
     {
-        var validChoices = Enumerable.Range(min, max).ToList();
+        if (numElements <= 0 || pickCount <= 0)
+        {
+            return new List<int>();
+        }
+        
+        var validChoices = Enumerable.Range(0, numElements).ToList();
         var randomNumbers = new List<int>();
+        
+        if (pickCount > validChoices.Count)
+        {
+            pickCount = validChoices.Count;
+        }
 
-        for (var i = 1; i <= count && validChoices.Count > 0; i++)
+        for (var i = 0; i < pickCount; i++)
         {
             int choiceIndex = UnityEngine.Random.Range(0, validChoices.Count);
             randomNumbers.Add(validChoices[choiceIndex]);

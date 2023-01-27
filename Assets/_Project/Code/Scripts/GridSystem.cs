@@ -37,6 +37,8 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private GameObject _blockerPrefab;
 
     [SerializeField] private Boundaries _boundaries;
+    
+    [SerializeField][Range(0f, 1f)] private float _chanceToSpawnBlocker = .25f;
 
     private GameObject[][] _grid;
     private float _cellSize;
@@ -55,7 +57,36 @@ public class GridSystem : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            InitializeGrid();
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            _gridWidth = GridWidth.Wide;
+            InitializeGrid();
+        }
         
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            _gridWidth = GridWidth.Narrow;
+            InitializeGrid();
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            _currentLevel++;
+            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
+            InitializeGrid();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            _currentLevel--;
+            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
+            InitializeGrid();
+        }
     }
 
     private int GetTotalCells(int maxRows, int maxColumns)
@@ -65,6 +96,8 @@ public class GridSystem : MonoBehaviour
 
     private void InitializeGrid()
     {
+        ClearGrid();
+        
         _cellSize = _cellPrefab.transform.localScale.x;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
@@ -128,11 +161,11 @@ public class GridSystem : MonoBehaviour
         var randomSpawnInterval = GetSpawnInterval();
         int numBubblesToSpawn = Mathf.Min(UnityEngine.Random.Range(randomSpawnInterval.x, randomSpawnInterval.y), GetTotalCells(_maxRowGeneration, _gridDimensions.MaxColumns));
         int numFirstRowColumns = _grid[0].Length;
-        int numBubblesInFirstRow = UnityEngine.Random.Range(numFirstRowColumns - 10, numFirstRowColumns);
+        int numBubblesInFirstRow = UnityEngine.Random.Range(2, numFirstRowColumns);
 
         var cellsToBranchFrom = new List<GridCell>();
         
-        var randomColumns = Helpers.GenerateRandomUniqueNumberList(numBubblesInFirstRow, 0, numFirstRowColumns);
+        var randomColumns = Helpers.GenerateRandomUniqueIndexes(numBubblesInFirstRow, numFirstRowColumns);
         foreach (int column in randomColumns)
         {
             var gridCell = GetGridCell(0, column);
@@ -179,8 +212,6 @@ public class GridSystem : MonoBehaviour
             }
             GenerateBubbles(cellsToBranchFrom, ref numBubblesToSpawn);
         }
-
-        Debug.LogFormat("Generated with {0} bubbles left over.", numBubblesToSpawn);
     }
 
     private void GenerateBubbles(List<GridCell> cellsToBranchFrom, ref int numBubblesToSpawn)
@@ -193,12 +224,32 @@ public class GridSystem : MonoBehaviour
             {
                 var emptyConnectedCells = cell.ConnectedCells.Where(connectedCell => connectedCell.GetComponent<GridCell>().GridPosition.x <= _maxRowGeneration && !connectedCell.GetComponent<GridCell>().Bubble).ToList();
                 int numConnectedBubblesToSpawn = UnityEngine.Random.Range(0, emptyConnectedCells.Count);
-                var randomCellIndexes = Helpers.GenerateRandomUniqueNumberList(numConnectedBubblesToSpawn, 0, Mathf.Min(emptyConnectedCells.Count, numBubblesToSpawn));
+                var randomCellIndexes = Helpers.GenerateRandomUniqueIndexes(numConnectedBubblesToSpawn, Mathf.Min(emptyConnectedCells.Count, numBubblesToSpawn));
+                int numBlockersToSpawn = UnityEngine.Random.Range(0, emptyConnectedCells.Count - numConnectedBubblesToSpawn + 1);
+                
+                var remainingEmptyCells = Enumerable.Range(0, emptyConnectedCells.Count).Except(randomCellIndexes).ToList();
 
                 foreach (int cellIndex in randomCellIndexes)
                 {
                     var gridCell = emptyConnectedCells[cellIndex].GetComponent<GridCell>();
                     SpawnBubbleInGridCell(gridCell, ref numBubblesToSpawn);
+                    newCellsToBranchFrom.Add(gridCell);
+                }
+                
+                bool spawnBlockers = UnityEngine.Random.Range(0.0f, 1.0f) > (1f - _chanceToSpawnBlocker);
+                
+                if (!spawnBlockers)
+                {
+                    continue;
+                }
+                
+                var randomEmptyCellIndexes = Helpers.GenerateRandomUniqueIndexes(numBlockersToSpawn, remainingEmptyCells.Count);
+                
+                foreach (int emptyCellIndex in randomEmptyCellIndexes)
+                {
+                    int cellIndex = remainingEmptyCells[emptyCellIndex];
+                    var gridCell = emptyConnectedCells[cellIndex].GetComponent<GridCell>();
+                    SpawnBubbleInGridCell(gridCell, ref numBubblesToSpawn, true);
                     newCellsToBranchFrom.Add(gridCell);
                 }
             }
@@ -209,6 +260,11 @@ public class GridSystem : MonoBehaviour
 
     private void SpawnBubbleInGridCell(GridCell gridCell, ref int numBubblesToSpawn, bool spawnBlocker = false)
     {
+        if (gridCell.Bubble)
+        {
+            Debug.LogErrorFormat("ERROR: {0} already has a bubble", gridCell.gameObject.name);
+        }
+        
         var objectToSpawn = spawnBlocker ? _blockerPrefab : _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
         gridCell.Bubble = Instantiate(objectToSpawn, gridCell.transform);
         numBubblesToSpawn--;
@@ -276,5 +332,21 @@ public class GridSystem : MonoBehaviour
     private GridCell GetGridCell(int row, int column)
     {
         return _grid[row][column].GetComponent<GridCell>();
+    }
+
+    private void ClearGrid()
+    {
+        if (_grid == null)
+        {
+            return;
+        }
+        
+        for (int row = 0; row < _grid.Length; row++)
+        {
+            for (int column = 0; column < _grid[row].Length; column++)
+            {
+                Destroy(_grid[row][column].gameObject);
+            }
+        }
     }
 }
