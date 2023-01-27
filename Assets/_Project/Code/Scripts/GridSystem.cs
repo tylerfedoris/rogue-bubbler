@@ -44,6 +44,7 @@ public class GridSystem : MonoBehaviour
     private int _totalCells;
     
     [SerializeField] private int _currentLevel = 1;
+    [SerializeField] private int _maxRowGeneration = 8;
 
     // Start is called before the first frame update
     private void Start()
@@ -57,12 +58,17 @@ public class GridSystem : MonoBehaviour
         
     }
 
+    private int GetTotalCells(int maxRows, int maxColumns)
+    {
+        return (maxRows * maxColumns) - (maxRows / 2);
+    }
+
     private void InitializeGrid()
     {
         _cellSize = _cellPrefab.transform.localScale.x;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
-        _totalCells = (_gridDimensions.MaxRows * _gridDimensions.MaxColumns) - (_gridDimensions.MaxRows / 2);
+        _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
         _grid = new GameObject[_gridDimensions.MaxRows][];
 
         SetBoundaryPositionAndScale();
@@ -120,21 +126,92 @@ public class GridSystem : MonoBehaviour
     private void GenerateBubbles()
     {
         var randomSpawnInterval = GetSpawnInterval();
-        int numBubblesToSpawn = UnityEngine.Random.Range(randomSpawnInterval.x, randomSpawnInterval.y);
+        int numBubblesToSpawn = Mathf.Min(UnityEngine.Random.Range(randomSpawnInterval.x, randomSpawnInterval.y), GetTotalCells(_maxRowGeneration, _gridDimensions.MaxColumns));
         int numFirstRowColumns = _grid[0].Length;
-        int numBubblesInFirstRow = UnityEngine.Random.Range(numFirstRowColumns / 3, numFirstRowColumns);
+        int numBubblesInFirstRow = UnityEngine.Random.Range(numFirstRowColumns - 10, numFirstRowColumns);
+
+        var cellsToBranchFrom = new List<GridCell>();
         
-        Debug.LogFormat("randomSpawnInterval: {0}, numBubblesToSpawn: {1}, numBubblesInFirstRow: {2}, numFirstRowColumns: {3}", 
-            randomSpawnInterval, numBubblesToSpawn, numBubblesInFirstRow, numFirstRowColumns);
-        
-        var columnsToPlaceBubbles = Helpers.GenerateRandomUniqueNumberList(numBubblesInFirstRow, 0, numFirstRowColumns);
-        foreach (int column in columnsToPlaceBubbles)
+        var randomColumns = Helpers.GenerateRandomUniqueNumberList(numBubblesInFirstRow, 0, numFirstRowColumns);
+        foreach (int column in randomColumns)
         {
-            Debug.LogFormat("placed in column: {0}", column);
             var gridCell = GetGridCell(0, column);
-            var bubbleToSpawn = _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
-            gridCell.Bubble = Instantiate(bubbleToSpawn, gridCell.transform);
+            SpawnBubbleInGridCell(gridCell, ref numBubblesToSpawn);
+            cellsToBranchFrom.Add(gridCell);
         }
+        
+        GenerateBubbles(cellsToBranchFrom, ref numBubblesToSpawn);
+
+        if (numBubblesToSpawn <= 0)
+        {
+            return;
+        }
+        
+        // if there are still bubbles left to spawn, work backwards to attempt spawning again
+        for (int row = _maxRowGeneration; row > 0 && numBubblesToSpawn > 0; row--)
+        {
+            cellsToBranchFrom = new List<GridCell>();
+            for (int column = 0; column < _grid[row].Length; column++)
+            {
+                var gridCell = GetGridCell(row, column);
+                if (gridCell.Bubble)
+                {
+                    cellsToBranchFrom.Add(GetGridCell(row, column));   
+                }
+            }
+            GenerateBubbles(cellsToBranchFrom, ref numBubblesToSpawn);
+        }
+        
+        if (numBubblesToSpawn <= 0)
+        {
+            return;
+        }
+
+        // if there are STILL bubbles left to spawn, start from the top down this time and include empty cells
+        // this might be okay to remove in the future if games get too exhausting at higher levels
+        // the chance to have a random easy level as a break might be nice
+        for (int row = 0; row < _maxRowGeneration && numBubblesToSpawn > 0; row++)
+        {
+            cellsToBranchFrom = new List<GridCell>();
+            for (int column = 0; column < _grid[row].Length; column++)
+            {
+                cellsToBranchFrom.Add(GetGridCell(row, column));
+            }
+            GenerateBubbles(cellsToBranchFrom, ref numBubblesToSpawn);
+        }
+
+        Debug.LogFormat("Generated with {0} bubbles left over.", numBubblesToSpawn);
+    }
+
+    private void GenerateBubbles(List<GridCell> cellsToBranchFrom, ref int numBubblesToSpawn)
+    {
+        while (numBubblesToSpawn > 0 && cellsToBranchFrom.Count > 0)
+        {
+            var newCellsToBranchFrom = new List<GridCell>();
+
+            foreach (var cell in cellsToBranchFrom)
+            {
+                var emptyConnectedCells = cell.ConnectedCells.Where(connectedCell => connectedCell.GetComponent<GridCell>().GridPosition.x <= _maxRowGeneration && !connectedCell.GetComponent<GridCell>().Bubble).ToList();
+                int numConnectedBubblesToSpawn = UnityEngine.Random.Range(0, emptyConnectedCells.Count);
+                var randomCellIndexes = Helpers.GenerateRandomUniqueNumberList(numConnectedBubblesToSpawn, 0, Mathf.Min(emptyConnectedCells.Count, numBubblesToSpawn));
+
+                foreach (int cellIndex in randomCellIndexes)
+                {
+                    var gridCell = emptyConnectedCells[cellIndex].GetComponent<GridCell>();
+                    SpawnBubbleInGridCell(gridCell, ref numBubblesToSpawn);
+                    newCellsToBranchFrom.Add(gridCell);
+                }
+            }
+
+            cellsToBranchFrom = newCellsToBranchFrom;
+        }
+    }
+
+    private void SpawnBubbleInGridCell(GridCell gridCell, ref int numBubblesToSpawn, bool spawnBlocker = false)
+    {
+        var objectToSpawn = spawnBlocker ? _blockerPrefab : _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
+        gridCell.Bubble = Instantiate(objectToSpawn, gridCell.transform);
+        numBubblesToSpawn--;
     }
 
     private void LinkConnectedCells()
@@ -146,13 +223,13 @@ public class GridSystem : MonoBehaviour
                 var gridCell = GetGridCell(row, column);
                 if (gridCell)
                 {
-                    GetConnectedCells(ref gridCell, row, column);
+                    GetConnectedCells(gridCell, row, column);
                 }
             }
         }
     }
 
-    private void GetConnectedCells(ref GridCell gridCell, int row, int column)
+    private void GetConnectedCells(GridCell gridCell, int row, int column)
     {
         if (gridCell.ConnectedCells.Count > 0)
         {

@@ -15318,6 +15318,10 @@ PrefabInstance:
       propertyPath: _cellPrefab
       value: 
       objectReference: {fileID: 9176593198226233252, guid: d0c12ba07c0cb2749b87139071840935, type: 3}
+    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: _currentLevel
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2122709785323682321, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: m_Name
       value: Play Area
