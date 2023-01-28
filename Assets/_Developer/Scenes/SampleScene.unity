@@ -15253,6 +15253,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 344229565816574278, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3073924807551377228, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Name
       value: Launcher
@@ -15267,7 +15271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8266623169127897048, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.16
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 8266623169127897048, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -15320,7 +15324,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5953001a08e702644b2789c4221517a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateSpeed: 1
+  _rotateSpeed: 100
+  _maxRotationDegrees: 60
+  _bubblePrefabs: []
 --- !u!114 &96791299733239412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15359,24 +15365,44 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _gridWidth
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _cellPrefab
+      propertyPath: _bubblePrefab
       value: 
-      objectReference: {fileID: 9176593198226233252, guid: d0c12ba07c0cb2749b87139071840935, type: 3}
+      objectReference: {fileID: 997117890731797050, guid: 62c3ced70b290c6418a3d048766d7f0f, type: 3}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _currentLevel
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: _bubbleTypes.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: _bubbleTypes.Array.data[1]
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _chanceToSpawnBlocker
-      value: 0.25
+      propertyPath: _bubbleTypes.Array.data[2]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: _bubbleTypes.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 337820219143001074, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2122709785323682321, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: m_Name
       value: Play Area
+      objectReference: {fileID: 0}
+    - target: {fileID: 3533670027889787828, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3564390839510277227, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5970979905422263665, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: m_RootOrder

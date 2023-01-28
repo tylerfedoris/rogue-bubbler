@@ -31,7 +31,9 @@ public class GridSystem : MonoBehaviour
     
     [SerializeField] private GameObject _cellPrefab;
 
-    [SerializeField] private GameObject[] _bubblePrefabs;
+    [SerializeField] private GameObject _bubblePrefab;
+
+    [SerializeField] private Bubble.BubbleType[] _bubbleTypes; 
     
     [SerializeField] private GameObject _blockerPrefab;
 
@@ -235,8 +237,16 @@ public class GridSystem : MonoBehaviour
             Debug.LogErrorFormat("ERROR: {0} already has a bubble", gridCell.gameObject.name);
         }
         
-        var objectToSpawn = spawnBlocker ? _blockerPrefab : _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
-        gridCell.Bubble = Instantiate(objectToSpawn, gridCell.transform);
+        gridCell.Bubble = Instantiate(_bubblePrefab, gridCell.transform);
+        var bubbleType = spawnBlocker
+            ? Bubble.BubbleType.Blocker
+            : _bubbleTypes[UnityEngine.Random.Range(0, _bubbleTypes.Length)];
+        var bubble = gridCell.Bubble.GetComponent<Bubble>();
+        if (!bubble)
+        {
+            throw new Exception("No Bubble script was found on the instantiated bubble GameObject.");
+        }
+        bubble.BubbleTypeProperty = bubbleType;
         numBubblesToSpawn--;
     }
 

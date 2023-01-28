@@ -7,17 +7,18 @@ public class Launcher : MonoBehaviour
 {
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
+    [SerializeField] private GameObject[] _bubblePrefabs;
 
     private float _rotateValue = 0f;
     
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         RotateByZ(_rotateValue * _rotateSpeed * Time.deltaTime);
     }

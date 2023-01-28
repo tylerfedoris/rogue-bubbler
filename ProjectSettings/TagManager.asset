@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Blocker
+  - Bubble_Blue
+  - Bubble_Red
+  - Bubble_Green
+  - Bubble_Purple
   layers:
   - Default
   - TransparentFX

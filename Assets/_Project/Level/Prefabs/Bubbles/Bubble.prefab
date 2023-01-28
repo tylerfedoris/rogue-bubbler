@@ -10,10 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 997117890731797188}
   - component: {fileID: 997117890731797189}
-  - component: {fileID: 7345697689824321928}
+  - component: {fileID: 3327381354965947246}
+  - component: {fileID: -5462528132763883579}
   m_Layer: 0
-  m_Name: BubbleRed
-  m_TagString: Bubble_Red
+  m_Name: Bubble
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.9490197, g: 0.28235295, b: 0.13333334, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!50 &7345697689824321928
+--- !u!50 &3327381354965947246
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -106,3 +107,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-5462528132763883579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997117890731797050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f56444b3b73fb448eff888d970b1d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockerScale: 0.75
+  _bubbleScale: 1
+  _bubbleType: 0
+  _bubbleSprites:
+    Blue: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+    Red: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+    Green: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+    Purple: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+    Blocker: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+    BlueColor: {r: 0.050980393, g: 0.6, b: 1, a: 1}
+    RedColor: {r: 0.9490196, g: 0.28235295, b: 0.13333334, a: 1}
+    GreenColor: {r: 0.078431375, g: 0.68235296, b: 0.36078432, a: 1}
+    PurpleColor: {r: 0.5921569, g: 0.2784314, b: 1, a: 1}
+    BlockerColor: {r: 0.30588236, g: 0.23529412, b: 0.09803922, a: 1}
