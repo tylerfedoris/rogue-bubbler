@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -51,42 +50,13 @@ public class GridSystem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        InitializeGrid();
+        GenerateGrid();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            InitializeGrid();
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            _gridWidth = GridWidth.Wide;
-            InitializeGrid();
-        }
         
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            _gridWidth = GridWidth.Narrow;
-            InitializeGrid();
-        }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            _currentLevel++;
-            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
-            InitializeGrid();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            _currentLevel--;
-            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
-            InitializeGrid();
-        }
     }
 
     private int GetTotalCells(int maxRows, int maxColumns)
@@ -94,7 +64,7 @@ public class GridSystem : MonoBehaviour
         return (maxRows * maxColumns) - (maxRows / 2);
     }
 
-    private void InitializeGrid()
+    private void GenerateGrid()
     {
         ClearGrid();
         
