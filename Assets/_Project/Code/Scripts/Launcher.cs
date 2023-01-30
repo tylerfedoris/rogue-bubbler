@@ -12,16 +12,18 @@ public class Launcher : MonoBehaviour
     [SerializeField] private Transform _bubbleSlot;
     [SerializeField] private GameObject _bubblePrefab;
     [SerializeField] private string _topBoundaryTag = "TopBoundary";
+    [SerializeField] private string _bubbleTag = "Bubble";
 
     private float _rotateValue = 0f;
     private bool _isLaunching = false;
     private GameObject _currentBubble;
     private Rigidbody2D _bubbleRigidBody;
+    private Collider2D _bubbleCollider;
     private Transform _launcherTransform;
     private Vector2 _prevLaunchDirection;
     private Vector2 _launchDirection;
     private LineRenderer _lineRenderer;
-    
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -87,6 +89,9 @@ public class Launcher : MonoBehaviour
         if (_currentBubble)
         {
             _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
+            
+            _bubbleCollider = _currentBubble.GetComponent<Collider2D>();
+            _bubbleCollider.enabled = false;
         }
     }
 
@@ -110,7 +115,12 @@ public class Launcher : MonoBehaviour
     {
         var launchPosition = startingLaunchPosition;
         var hitResults = new List<RaycastHit2D>();
-        var contactFilter = new ContactFilter2D();
+        var contactFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = ~(1 << 2),
+            useTriggers = true
+        };
         if (Physics2D.Raycast(startingLaunchPosition, _launchDirection, contactFilter, hitResults) <= 0)
         {
             return;
@@ -119,7 +129,7 @@ public class Launcher : MonoBehaviour
         collisionPoints.Add(hitResults[0].point);
         var prevHit = hitResults[0];
 
-        while (collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag))
+        while (collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag))
         {
             hitResults.Clear();
             var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;

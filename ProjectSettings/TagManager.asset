@@ -10,6 +10,7 @@ TagManager:
   - Blocker
   - LeftBoundary
   - RightBoundary
+  - Bubble
   layers:
   - Default
   - TransparentFX
