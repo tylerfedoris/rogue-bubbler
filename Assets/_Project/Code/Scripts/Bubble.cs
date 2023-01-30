@@ -35,10 +35,12 @@ public class Bubble : MonoBehaviour
     [SerializeField] private BubbleType _bubbleType = BubbleType.Blue;
     [SerializeField] private BubbleSprites _bubbleSprites;
 
+    public float BubbleScale => _bubbleScale;
+
     public BubbleType BubbleTypeProperty
     {
-        get { return _bubbleType; }
-        set { _bubbleType = value; }
+        get => _bubbleType;
+        set => _bubbleType = value;
     }
 
     // Start is called before the first frame update

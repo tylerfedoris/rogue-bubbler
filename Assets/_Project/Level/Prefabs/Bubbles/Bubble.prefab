@@ -103,7 +103,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -119,8 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f56444b3b73fb448eff888d970b1d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blockerScale: 0.75
-  _bubbleScale: 1
+  _blockerScale: 0.4
+  _bubbleScale: 0.5
   _bubbleType: 0
   _bubbleSprites:
     Blue: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}

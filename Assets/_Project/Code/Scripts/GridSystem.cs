@@ -69,8 +69,8 @@ public class GridSystem : MonoBehaviour
     private void GenerateGrid()
     {
         ClearGrid();
-        
-        _cellSize = _cellPrefab.transform.localScale.x;
+
+        _cellSize = _bubblePrefab.GetComponent<Bubble>().BubbleScale;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
         _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
