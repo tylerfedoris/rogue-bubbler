@@ -8,20 +8,26 @@ public class Launcher : MonoBehaviour
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
     [SerializeField] private float _launchSpeed = 60.0f;
+    [SerializeField] private int _maxCollisionPoints = 10;
     [SerializeField] private Transform _bubbleSlot;
     [SerializeField] private GameObject _bubblePrefab;
+    [SerializeField] private string _topBoundaryTag = "TopBoundary";
 
     private float _rotateValue = 0f;
     private bool _isLaunching = false;
     private GameObject _currentBubble;
     private Rigidbody2D _bubbleRigidBody;
     private Transform _launcherTransform;
+    private Vector2 _prevLaunchDirection;
     private Vector2 _launchDirection;
+    private LineRenderer _lineRenderer;
     
     // Start is called before the first frame update
     private void Start()
     {
         _launcherTransform = transform;
+        _lineRenderer = GetComponent<LineRenderer>();
+        _launchDirection = _launcherTransform.up;
         SpawnNextBubble();
     }
 
@@ -32,8 +38,12 @@ public class Launcher : MonoBehaviour
 
         if (!_isLaunching)
         {
+            _prevLaunchDirection = _launchDirection;
             _launchDirection = _launcherTransform.up;
-            RenderAimIndicator();
+            if (_prevLaunchDirection != _launchDirection)
+            {
+                RenderAimIndicator();
+            }
         }
         
         if (_isLaunching)
@@ -82,10 +92,55 @@ public class Launcher : MonoBehaviour
 
     private void RenderAimIndicator()
     {
-        // List<RaycastHit2D> hit;
-        // if ()
-        // {
-        //     
-        // }
+        var startingLaunchPosition = _bubbleSlot.transform.position;
+        
+        var collisionPoints = new List<Vector2>();
+        GetCollisionPoints(startingLaunchPosition, collisionPoints);
+
+        _lineRenderer.positionCount = collisionPoints.Count + 1;
+        _lineRenderer.SetPosition(0, startingLaunchPosition);
+
+        for (var i = 0; i < collisionPoints.Count; i++)
+        {
+            _lineRenderer.SetPosition(i + 1, collisionPoints[i]);
+        }
+    }
+
+    private void GetCollisionPoints(Vector2 startingLaunchPosition, List<Vector2> collisionPoints)
+    {
+        var launchPosition = startingLaunchPosition;
+        var hitResults = new List<RaycastHit2D>();
+        var contactFilter = new ContactFilter2D();
+        if (Physics2D.Raycast(startingLaunchPosition, _launchDirection, contactFilter, hitResults) <= 0)
+        {
+            return;
+        }
+        
+        collisionPoints.Add(hitResults[0].point);
+        var prevHit = hitResults[0];
+
+        while (collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag))
+        {
+            hitResults.Clear();
+            var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;
+            if (Physics2D.Raycast(prevHit.point, reflectionVector, contactFilter, hitResults) <= 0)
+            {
+                break;
+            }
+
+            RaycastHit2D validHit = new RaycastHit2D();
+            foreach (var hit in hitResults)
+            {
+                if (!hit.collider.CompareTag(prevHit.collider.tag))
+                {
+                    validHit = hit;
+                    break;
+                }
+            }
+
+            collisionPoints.Add(validHit.point);
+            launchPosition = prevHit.point;
+            prevHit = validHit;
+        }
     }
 }

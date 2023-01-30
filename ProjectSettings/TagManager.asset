@@ -4,11 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Blocker
+  - TopBoundary
+  - BottomBoundary
   - Bubble_Blue
-  - Bubble_Red
-  - Bubble_Green
-  - Bubble_Purple
+  - Blocker
+  - LeftBoundary
+  - RightBoundary
   layers:
   - Default
   - TransparentFX
