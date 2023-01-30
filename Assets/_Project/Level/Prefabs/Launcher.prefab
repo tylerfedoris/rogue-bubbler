@@ -166,10 +166,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rotateSpeed: 100
   _maxRotationDegrees: 60
-  _launchSpeed: 60
+  _launchSpeed: 100
+  _maxCollisionPoints: 3
   _bubbleSlot: {fileID: 173441063}
   _bubblePrefab: {fileID: 997117890731797050, guid: 62c3ced70b290c6418a3d048766d7f0f, type: 3}
-  _boundaryTag: SideBoundary
   _topBoundaryTag: TopBoundary
 --- !u!114 &96791299733239412
 MonoBehaviour:
@@ -209,8 +209,8 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3073924807551377228}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 0
@@ -221,7 +221,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 3e6d780190cb6ee49b3dc3d78f21661a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -241,13 +241,13 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -292,8 +292,8 @@ LineRenderer:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 0
-    numCapVertices: 0
+    numCornerVertices: 10
+    numCapVertices: 10
     alignment: 0
     textureMode: 0
     shadowBias: 0.5

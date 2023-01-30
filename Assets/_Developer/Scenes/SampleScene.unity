@@ -15254,40 +15254,36 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_CastShadows
+      propertyPath: m_UseWorldSpace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: m_Positions.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
+      propertyPath: m_Parameters.textureMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3e6d780190cb6ee49b3dc3d78f21661a, type: 2}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Parameters.numCapVertices
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_Positions.Array.data[1].y
+      propertyPath: m_Positions.Array.data[0].x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_Parameters.widthMultiplier
-      value: 0.1
+      propertyPath: m_Positions.Array.data[0].y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1031296279, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Parameters.numCornerVertices
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _launchSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _maxCollisionPoints
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3073924807551377228, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Name
