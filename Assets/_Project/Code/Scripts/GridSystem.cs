@@ -70,7 +70,7 @@ public class GridSystem : MonoBehaviour
     {
         ClearGrid();
 
-        _cellSize = _bubblePrefab.GetComponent<Bubble>().BubbleScale;
+        _cellSize = Bubble.BubbleScale;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
         _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
@@ -97,8 +97,7 @@ public class GridSystem : MonoBehaviour
                 
                 var gridCell = cell.GetComponent<GridCell>();
                 gridCell.GridPosition = new Vector2Int(row, column);
-                var bubble = _bubblePrefab.GetComponent<Bubble>();
-                gridCell.GetComponent<BoxCollider2D>().size = new Vector2(bubble.BubbleScale, bubble.BubbleScale);
+                gridCell.GetComponent<BoxCollider2D>().size = new Vector2(Bubble.BubbleScale, Bubble.BubbleScale);
             }
         }
 

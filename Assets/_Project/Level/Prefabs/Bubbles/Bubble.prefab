@@ -106,7 +106,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &-5462528132763883579
 MonoBehaviour:
@@ -120,8 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f56444b3b73fb448eff888d970b1d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blockerScale: 0.4
-  _bubbleScale: 0.5
   _bubbleType: 0
   _bubbleSprites:
     Blue: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
@@ -134,6 +132,7 @@ MonoBehaviour:
     GreenColor: {r: 0.078431375, g: 0.68235296, b: 0.36078432, a: 1}
     PurpleColor: {r: 0.5921569, g: 0.2784314, b: 1, a: 1}
     BlockerColor: {r: 0.30588236, g: 0.23529412, b: 0.09803922, a: 1}
+  _collidingObjects: []
 --- !u!58 &-283735606323780425
 CircleCollider2D:
   m_ObjectHideFlags: 0

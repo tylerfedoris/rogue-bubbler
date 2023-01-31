@@ -36,7 +36,7 @@ public class Launcher : MonoBehaviour
         _launcherTransform = transform;
         _lineRenderer = GetComponent<LineRenderer>();
         _launchDirection = _launcherTransform.up;
-        _collisionRadius = _bubblePrefab.GetComponent<Bubble>().BubbleScale / 2f;
+        _collisionRadius = Bubble.BubbleScale / 2f;
         _bubbleSlotTransform = _bubbleSlot.transform;
         SpawnNextBubble();
     }
@@ -46,7 +46,7 @@ public class Launcher : MonoBehaviour
     {
         RotateByZ(_rotateValue * _rotateSpeed * Time.deltaTime);
 
-        if (_isLaunching && !_launchBubbleCoroutineRunning)
+        if (_isLaunching && _currentBubble && !_launchBubbleCoroutineRunning)
         {
             _lineRenderer.enabled = false;
             StartCoroutine(LaunchBubbleCoroutine());
@@ -130,7 +130,7 @@ public class Launcher : MonoBehaviour
             layerMask = ~(1 << 2),
             useTriggers = true
         };
-        if (Physics2D.Raycast(startingLaunchPosition, _launchDirection, contactFilter, hitResults) <= 0)
+        if (Physics2D.CircleCast(startingLaunchPosition, _collisionRadius, _launchDirection, contactFilter, hitResults) <= 0)
         {
             return;
         }
@@ -146,11 +146,11 @@ public class Launcher : MonoBehaviour
         _collisionPoints.Add(hitResults[validHitIndex].point);
         RaycastHit2D prevHit = hitResults[validHitIndex];
 
-        while (_collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !hitCellContainingBubble)
+        while (_collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag) && !hitCellContainingBubble)
         {
             hitResults.Clear();
             var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;
-            if (Physics2D.Raycast(prevHit.point, reflectionVector, contactFilter, hitResults) <= 0)
+            if (Physics2D.CircleCast(prevHit.point, _collisionRadius, reflectionVector, contactFilter, hitResults) <= 0)
             {
                 break;
             }
@@ -161,8 +161,8 @@ public class Launcher : MonoBehaviour
             {
                 continue;
             }
-            
-            _collisionPoints.Add((hitResults[validHitIndex].point));
+
+            _collisionPoints.Add(hitResults[validHitIndex].point);
             launchPosition = prevHit.point;
             prevHit = hitResults[validHitIndex];
         }
@@ -182,12 +182,15 @@ public class Launcher : MonoBehaviour
             
             if (hits[i].collider.CompareTag(_cellTag))
             {
-                var gridCell = hits[i].collider.gameObject.GetComponent<GridCell>();
-                if (gridCell.Bubble)
+                if (i < hits.Count - 1)
                 {
-                    hitCellContainingBubble = true;
-                    validIndex = i;
-                    break;
+                    var gridCell = hits[i + 1].collider.gameObject.GetComponent<GridCell>();
+                    if (gridCell && gridCell.Bubble)
+                    {
+                        hitCellContainingBubble = true;
+                        validIndex = i;
+                        break;
+                    }
                 }
             }
             else

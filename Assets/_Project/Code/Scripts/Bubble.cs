@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Bubble : MonoBehaviour
 {
+    static public float BlockerScale = 0.4f;
+    static public float BubbleScale = 0.5f;
+    
     [Serializable]
     public enum BubbleType
     {
@@ -29,14 +32,10 @@ public class Bubble : MonoBehaviour
         public Color PurpleColor;
         public Color BlockerColor;
     }
-
-    [SerializeField] private float _blockerScale = 0.75f;
-    [SerializeField] private float _bubbleScale = 1.0f;
+    
     [SerializeField] private BubbleType _bubbleType = BubbleType.Blue;
     [SerializeField] private BubbleSprites _bubbleSprites;
     [SerializeField] private List<Collider2D> _collidingObjects = new();
-
-    public float BubbleScale => _bubbleScale;
 
     private Transform _transform;
 
@@ -56,27 +55,27 @@ public class Bubble : MonoBehaviour
             case BubbleType.Blue:
                 spriteRenderer.sprite = _bubbleSprites.Blue;
                 spriteRenderer.color = _bubbleSprites.BlueColor;
-                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(BubbleScale, BubbleScale, BubbleScale);
                 break;
             case BubbleType.Red:
                 spriteRenderer.sprite = _bubbleSprites.Red;
                 spriteRenderer.color = _bubbleSprites.RedColor;
-                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(BubbleScale, BubbleScale, BubbleScale);
                 break;
             case BubbleType.Green:
                 spriteRenderer.sprite = _bubbleSprites.Green;
                 spriteRenderer.color = _bubbleSprites.GreenColor;
-                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(BubbleScale, BubbleScale, BubbleScale);
                 break;
             case BubbleType.Purple:
                 spriteRenderer.sprite = _bubbleSprites.Purple;
                 spriteRenderer.color = _bubbleSprites.PurpleColor;
-                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(BubbleScale, BubbleScale, BubbleScale);
                 break;
             case BubbleType.Blocker:
                 spriteRenderer.sprite = _bubbleSprites.Blocker;
                 spriteRenderer.color = _bubbleSprites.BlockerColor;
-                _transform.localScale = new Vector3(_blockerScale, _blockerScale, _blockerScale);
+                _transform.localScale = new Vector3(BlockerScale, BlockerScale, BlockerScale);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -122,6 +121,7 @@ public class Bubble : MonoBehaviour
         closestGridCell.Bubble = gameObject;
         _transform.parent = closestGridCell.transform;
         _transform.localPosition = Vector3.zero;
+        _transform.GetComponent<Collider2D>().enabled = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
