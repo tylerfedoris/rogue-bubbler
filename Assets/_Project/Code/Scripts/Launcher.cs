@@ -28,7 +28,7 @@ public class Launcher : MonoBehaviour
     private List<Vector2> _collisionPoints;
     private float _elapsedLaunchTime;
     private Transform _bubbleSlotTransform;
-    private Coroutine _launchBubbleCoroutine;
+    private bool _launchBubbleCoroutineRunning;
 
     // Start is called before the first frame update
     private void Start()
@@ -46,18 +46,14 @@ public class Launcher : MonoBehaviour
     {
         RotateByZ(_rotateValue * _rotateSpeed * Time.deltaTime);
 
-        if (_isLaunching)
+        if (_isLaunching && !_launchBubbleCoroutineRunning)
         {
             _lineRenderer.enabled = false;
-            _launchBubbleCoroutine = StartCoroutine(LaunchBubbleCoroutine());
+            StartCoroutine(LaunchBubbleCoroutine());
         }
         
         if (!_isLaunching)
         {
-            if (_launchBubbleCoroutine != null)
-            {
-                StopCoroutine(_launchBubbleCoroutine);   
-            }
             if (!_currentBubble)
             {
                 SpawnNextBubble();
@@ -100,6 +96,7 @@ public class Launcher : MonoBehaviour
 
         if (_currentBubble)
         {
+            _currentBubble.transform.localPosition = Vector3.zero;
             _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
             
             _bubbleCollider = _currentBubble.GetComponent<Collider2D>();
@@ -205,6 +202,8 @@ public class Launcher : MonoBehaviour
 
     IEnumerator LaunchBubbleCoroutine()
     {
+        _launchBubbleCoroutineRunning = true;
+        _bubbleCollider.enabled = true;
         for (var i = 0; i < _collisionPoints.Count; i++)
         {
             var distanceTraveled = 0f;
@@ -223,6 +222,10 @@ public class Launcher : MonoBehaviour
             _bubbleRigidBody.MovePosition(endPosition);
         }
 
+        var bubble = _currentBubble.GetComponent<Bubble>();
+        bubble.PlaceBubble();
         _isLaunching = false;
+        _currentBubble = null;
+        _launchBubbleCoroutineRunning = false;        
     }
 }

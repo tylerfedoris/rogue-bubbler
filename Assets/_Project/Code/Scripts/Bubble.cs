@@ -34,8 +34,11 @@ public class Bubble : MonoBehaviour
     [SerializeField] private float _bubbleScale = 1.0f;
     [SerializeField] private BubbleType _bubbleType = BubbleType.Blue;
     [SerializeField] private BubbleSprites _bubbleSprites;
+    [SerializeField] private List<Collider2D> _collidingObjects = new();
 
     public float BubbleScale => _bubbleScale;
+
+    private Transform _transform;
 
     public BubbleType BubbleTypeProperty
     {
@@ -47,42 +50,87 @@ public class Bubble : MonoBehaviour
     private void Start()
     {
         var spriteRenderer = GetComponent<SpriteRenderer>();
-        var myTransform = transform;
+        _transform = transform;
         switch (_bubbleType)
         {
             case BubbleType.Blue:
                 spriteRenderer.sprite = _bubbleSprites.Blue;
                 spriteRenderer.color = _bubbleSprites.BlueColor;
-                myTransform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
                 break;
             case BubbleType.Red:
                 spriteRenderer.sprite = _bubbleSprites.Red;
                 spriteRenderer.color = _bubbleSprites.RedColor;
-                myTransform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
                 break;
             case BubbleType.Green:
                 spriteRenderer.sprite = _bubbleSprites.Green;
                 spriteRenderer.color = _bubbleSprites.GreenColor;
-                myTransform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
                 break;
             case BubbleType.Purple:
                 spriteRenderer.sprite = _bubbleSprites.Purple;
                 spriteRenderer.color = _bubbleSprites.PurpleColor;
-                myTransform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
+                _transform.localScale = new Vector3(_bubbleScale, _bubbleScale, _bubbleScale);
                 break;
             case BubbleType.Blocker:
                 spriteRenderer.sprite = _bubbleSprites.Blocker;
                 spriteRenderer.color = _bubbleSprites.BlockerColor;
-                myTransform.localScale = new Vector3(_blockerScale, _blockerScale, _blockerScale);
+                _transform.localScale = new Vector3(_blockerScale, _blockerScale, _blockerScale);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
-    // Update is called once per frame
-    private void Update()
+    public void PlaceBubble()
     {
-        
+        var gridCellCandidates = new List<GridCell>();
+        foreach (var collidingObject in _collidingObjects)
+        {
+            var gridCell = collidingObject.GetComponent<GridCell>();
+            if (gridCell && !gridCell.Bubble)
+            {
+                gridCellCandidates.Add(gridCell);
+            }
+        }
+
+        if (gridCellCandidates.Count <= 0)
+        {
+            throw new Exception(
+                "Something went wrong when attempting to place the bubble in the grid. No valid grid candidates were found.");
+        }
+
+        GridCell closestGridCell = null;
+        var closestDistance = float.MaxValue;
+
+        foreach (var gridCellCandidate in gridCellCandidates)
+        {
+            float distanceToCell = Vector2.Distance(_transform.position, gridCellCandidate.transform.position);
+            if (distanceToCell < closestDistance)
+            {
+                closestDistance = distanceToCell;
+                closestGridCell = gridCellCandidate;
+            }
+        }
+
+        if (!closestGridCell)
+        {
+            return;
+        }
+
+        closestGridCell.Bubble = gameObject;
+        _transform.parent = closestGridCell.transform;
+        _transform.localPosition = Vector3.zero;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        _collidingObjects.Add(other);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        _collidingObjects.Remove(other);
     }
 }
