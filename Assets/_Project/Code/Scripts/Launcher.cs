@@ -13,6 +13,7 @@ public class Launcher : MonoBehaviour
     [SerializeField] private GameObject _bubblePrefab;
     [SerializeField] private string _topBoundaryTag = "TopBoundary";
     [SerializeField] private string _bubbleTag = "Bubble";
+    [SerializeField] private string _cellTag = "Cell";
 
     private float _rotateValue = 0f;
     private bool _isLaunching = false;
@@ -23,6 +24,11 @@ public class Launcher : MonoBehaviour
     private Vector2 _prevLaunchDirection;
     private Vector2 _launchDirection;
     private LineRenderer _lineRenderer;
+    private float _collisionRadius;
+    private List<Vector2> _collisionPoints;
+    private float _elapsedLaunchTime;
+    private Transform _bubbleSlotTransform;
+    private Coroutine _launchBubbleCoroutine;
 
     // Start is called before the first frame update
     private void Start()
@@ -30,6 +36,8 @@ public class Launcher : MonoBehaviour
         _launcherTransform = transform;
         _lineRenderer = GetComponent<LineRenderer>();
         _launchDirection = _launcherTransform.up;
+        _collisionRadius = _bubblePrefab.GetComponent<Bubble>().BubbleScale / 2f;
+        _bubbleSlotTransform = _bubbleSlot.transform;
         SpawnNextBubble();
     }
 
@@ -38,19 +46,29 @@ public class Launcher : MonoBehaviour
     {
         RotateByZ(_rotateValue * _rotateSpeed * Time.deltaTime);
 
+        if (_isLaunching)
+        {
+            _lineRenderer.enabled = false;
+            _launchBubbleCoroutine = StartCoroutine(LaunchBubbleCoroutine());
+        }
+        
         if (!_isLaunching)
         {
+            if (_launchBubbleCoroutine != null)
+            {
+                StopCoroutine(_launchBubbleCoroutine);   
+            }
+            if (!_currentBubble)
+            {
+                SpawnNextBubble();
+            }
+            _lineRenderer.enabled = true;
             _prevLaunchDirection = _launchDirection;
             _launchDirection = _launcherTransform.up;
             if (_prevLaunchDirection != _launchDirection)
             {
                 RenderAimIndicator();
             }
-        }
-        
-        if (_isLaunching)
-        {
-            MoveBubbleForward();
         }
     }
 
@@ -69,17 +87,11 @@ public class Launcher : MonoBehaviour
 
     private void OnLaunch()
     {
-        if (!_isLaunching && _bubbleRigidBody != null)
+        if (!_isLaunching)
         {
             _isLaunching = true;
             _currentBubble.transform.parent = null;
         }
-    }
-
-    private void MoveBubbleForward()
-    {
-        Vector2 desiredPosition = _bubbleRigidBody.position + _launchDirection * (_launchSpeed * Time.deltaTime);
-        _bubbleRigidBody.MovePosition(desiredPosition);
     }
 
     private void SpawnNextBubble()
@@ -97,21 +109,21 @@ public class Launcher : MonoBehaviour
 
     private void RenderAimIndicator()
     {
-        var startingLaunchPosition = _bubbleSlot.transform.position;
+        var startingLaunchPosition = _bubbleSlotTransform.position;
         
-        var collisionPoints = new List<Vector2>();
-        GetCollisionPoints(startingLaunchPosition, collisionPoints);
+        _collisionPoints = new List<Vector2>();
+        GetCollisionPoints(startingLaunchPosition);
 
-        _lineRenderer.positionCount = collisionPoints.Count + 1;
+        _lineRenderer.positionCount = _collisionPoints.Count + 1;
         _lineRenderer.SetPosition(0, startingLaunchPosition);
 
-        for (var i = 0; i < collisionPoints.Count; i++)
+        for (var i = 0; i < _collisionPoints.Count; i++)
         {
-            _lineRenderer.SetPosition(i + 1, collisionPoints[i]);
+            _lineRenderer.SetPosition(i + 1, _collisionPoints[i]);
         }
     }
 
-    private void GetCollisionPoints(Vector2 startingLaunchPosition, List<Vector2> collisionPoints)
+    private void GetCollisionPoints(Vector2 startingLaunchPosition)
     {
         var launchPosition = startingLaunchPosition;
         var hitResults = new List<RaycastHit2D>();
@@ -126,10 +138,18 @@ public class Launcher : MonoBehaviour
             return;
         }
         
-        collisionPoints.Add(hitResults[0].point);
-        var prevHit = hitResults[0];
+        bool hitCellContainingBubble = false;
+        int validHitIndex = GetValidHitIndex(hitResults, out hitCellContainingBubble);
 
-        while (collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag))
+        if (validHitIndex < 0)
+        {
+            return;
+        }
+        
+        _collisionPoints.Add(hitResults[validHitIndex].point);
+        RaycastHit2D prevHit = hitResults[validHitIndex];
+
+        while (_collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !hitCellContainingBubble)
         {
             hitResults.Clear();
             var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;
@@ -138,19 +158,71 @@ public class Launcher : MonoBehaviour
                 break;
             }
 
-            RaycastHit2D validHit = new RaycastHit2D();
-            foreach (var hit in hitResults)
+            validHitIndex = GetValidHitIndex(hitResults, out hitCellContainingBubble, prevHit.collider.tag);
+
+            if (validHitIndex < 0)
             {
-                if (!hit.collider.CompareTag(prevHit.collider.tag))
+                continue;
+            }
+            
+            _collisionPoints.Add((hitResults[validHitIndex].point));
+            launchPosition = prevHit.point;
+            prevHit = hitResults[validHitIndex];
+        }
+    }
+
+    private int GetValidHitIndex(List<RaycastHit2D> hits, out bool hitCellContainingBubble, string prevHitTag = "Untagged")
+    {
+        int validIndex = -1;
+        hitCellContainingBubble = false;
+        
+        for (var i = 0; i < hits.Count; i++)
+        {
+            if (hits[i].collider.CompareTag(prevHitTag))
+            {
+                continue;
+            }
+            
+            if (hits[i].collider.CompareTag(_cellTag))
+            {
+                var gridCell = hits[i].collider.gameObject.GetComponent<GridCell>();
+                if (gridCell.Bubble)
                 {
-                    validHit = hit;
+                    hitCellContainingBubble = true;
+                    validIndex = i;
                     break;
                 }
             }
-
-            collisionPoints.Add(validHit.point);
-            launchPosition = prevHit.point;
-            prevHit = validHit;
+            else
+            {
+                validIndex = i;
+                break;
+            }
         }
+
+        return validIndex;
+    }
+
+    IEnumerator LaunchBubbleCoroutine()
+    {
+        for (var i = 0; i < _collisionPoints.Count; i++)
+        {
+            var distanceTraveled = 0f;
+            var startPosition = i == 0 ? (Vector2)_bubbleSlotTransform.position : _collisionPoints[i - 1];
+            var endPosition = _collisionPoints[i];
+            var travelDistance = Vector2.Distance(startPosition, endPosition);
+            while (distanceTraveled < travelDistance)
+            {
+                var movePosition = Vector2.Lerp(startPosition, endPosition, distanceTraveled / travelDistance);
+                _bubbleRigidBody.MovePosition(movePosition);
+                distanceTraveled += _launchSpeed * Time.deltaTime;
+
+                yield return null;
+            }
+            
+            _bubbleRigidBody.MovePosition(endPosition);
+        }
+
+        _isLaunching = false;
     }
 }
