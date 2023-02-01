@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Bubble : MonoBehaviour
@@ -15,7 +16,8 @@ public class Bubble : MonoBehaviour
         Red,
         Green,
         Purple,
-        Blocker
+        Blocker,
+        Debug
     }
 
     [Serializable]
@@ -26,11 +28,13 @@ public class Bubble : MonoBehaviour
         public Sprite Green;
         public Sprite Purple;
         public Sprite Blocker;
+        public Sprite Debug;
         public Color BlueColor;
         public Color RedColor;
         public Color GreenColor;
         public Color PurpleColor;
         public Color BlockerColor;
+        public Color DebugColor;
     }
     
     [SerializeField] private BubbleType _bubbleType = BubbleType.Blue;
@@ -76,52 +80,15 @@ public class Bubble : MonoBehaviour
                 spriteRenderer.sprite = _bubbleSprites.Blocker;
                 spriteRenderer.color = _bubbleSprites.BlockerColor;
                 _transform.localScale = new Vector3(BlockerScale, BlockerScale, BlockerScale);
+                break;           
+            case BubbleType.Debug:
+                spriteRenderer.sprite = _bubbleSprites.Debug;
+                spriteRenderer.color = _bubbleSprites.DebugColor;
+                _transform.localScale = new Vector3(BubbleScale, BubbleScale, BubbleScale);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
-
-    public void PlaceBubble()
-    {
-        var gridCellCandidates = new List<GridCell>();
-        foreach (var collidingObject in _collidingObjects)
-        {
-            var gridCell = collidingObject.GetComponent<GridCell>();
-            if (gridCell && !gridCell.Bubble)
-            {
-                gridCellCandidates.Add(gridCell);
-            }
-        }
-
-        if (gridCellCandidates.Count <= 0)
-        {
-            throw new Exception(
-                "Something went wrong when attempting to place the bubble in the grid. No valid grid candidates were found.");
-        }
-
-        GridCell closestGridCell = null;
-        var closestDistance = float.MaxValue;
-
-        foreach (var gridCellCandidate in gridCellCandidates)
-        {
-            float distanceToCell = Vector2.Distance(_transform.position, gridCellCandidate.transform.position);
-            if (distanceToCell < closestDistance)
-            {
-                closestDistance = distanceToCell;
-                closestGridCell = gridCellCandidate;
-            }
-        }
-
-        if (!closestGridCell)
-        {
-            return;
-        }
-
-        closestGridCell.Bubble = gameObject;
-        _transform.parent = closestGridCell.transform;
-        _transform.localPosition = Vector3.zero;
-        _transform.GetComponent<Collider2D>().enabled = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

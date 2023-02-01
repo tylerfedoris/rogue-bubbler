@@ -127,11 +127,13 @@ MonoBehaviour:
     Green: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
     Purple: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
     Blocker: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+    Debug: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
     BlueColor: {r: 0.050980393, g: 0.6, b: 1, a: 1}
     RedColor: {r: 0.9490196, g: 0.28235295, b: 0.13333334, a: 1}
     GreenColor: {r: 0.078431375, g: 0.68235296, b: 0.36078432, a: 1}
     PurpleColor: {r: 0.5921569, g: 0.2784314, b: 1, a: 1}
     BlockerColor: {r: 0.30588236, g: 0.23529412, b: 0.09803922, a: 1}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
   _collidingObjects: []
 --- !u!58 &-283735606323780425
 CircleCollider2D:

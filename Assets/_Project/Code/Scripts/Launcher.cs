@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,8 @@ public class Launcher : MonoBehaviour
     private float _elapsedLaunchTime;
     private Transform _bubbleSlotTransform;
     private bool _launchBubbleCoroutineRunning;
+    private GameObject _previewBubble;
+    private GridCell _targetGridCell;
 
     // Start is called before the first frame update
     private void Start()
@@ -36,7 +39,7 @@ public class Launcher : MonoBehaviour
         _launcherTransform = transform;
         _lineRenderer = GetComponent<LineRenderer>();
         _launchDirection = _launcherTransform.up;
-        _collisionRadius = Bubble.BubbleScale / 2f;
+        _collisionRadius = Bubble.BubbleScale / 4f;
         _bubbleSlotTransform = _bubbleSlot.transform;
         SpawnNextBubble();
     }
@@ -63,6 +66,14 @@ public class Launcher : MonoBehaviour
             _launchDirection = _launcherTransform.up;
             if (_prevLaunchDirection != _launchDirection)
             {
+                if (_targetGridCell)
+                {
+                    _targetGridCell = null;
+                }
+                if (_previewBubble)
+                {
+                    Destroy(_previewBubble);
+                }
                 RenderAimIndicator();
             }
         }
@@ -135,18 +146,17 @@ public class Launcher : MonoBehaviour
             return;
         }
         
-        bool hitCellContainingBubble = false;
-        int validHitIndex = GetValidHitIndex(hitResults, out hitCellContainingBubble);
+        int validHitIndex = GetValidHitIndex(hitResults);
 
         if (validHitIndex < 0)
         {
             return;
         }
-        
-        _collisionPoints.Add(hitResults[validHitIndex].point);
-        RaycastHit2D prevHit = hitResults[validHitIndex];
 
-        while (_collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag) && !hitCellContainingBubble)
+        _collisionPoints.Add(_targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].point);
+        var prevHit = hitResults[validHitIndex];
+
+        while (!_targetGridCell && _collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag))
         {
             hitResults.Clear();
             var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;
@@ -155,10 +165,16 @@ public class Launcher : MonoBehaviour
                 break;
             }
 
-            validHitIndex = GetValidHitIndex(hitResults, out hitCellContainingBubble, prevHit.collider.tag);
+            validHitIndex = GetValidHitIndex(hitResults, prevHit.collider.tag);
 
             if (validHitIndex < 0)
             {
+                continue;
+            }
+
+            if (_targetGridCell)
+            {
+                _collisionPoints.Add(_targetGridCell.transform.position);
                 continue;
             }
 
@@ -168,11 +184,8 @@ public class Launcher : MonoBehaviour
         }
     }
 
-    private int GetValidHitIndex(List<RaycastHit2D> hits, out bool hitCellContainingBubble, string prevHitTag = "Untagged")
+    private int GetValidHitIndex(IReadOnlyList<RaycastHit2D> hits, string prevHitTag = "Untagged")
     {
-        int validIndex = -1;
-        hitCellContainingBubble = false;
-        
         for (var i = 0; i < hits.Count; i++)
         {
             if (hits[i].collider.CompareTag(prevHitTag))
@@ -182,25 +195,51 @@ public class Launcher : MonoBehaviour
             
             if (hits[i].collider.CompareTag(_cellTag))
             {
-                if (i < hits.Count - 1)
+                var hitGridCell = hits[i].collider.gameObject.GetComponent<GridCell>();
+                if (!hitGridCell || !hitGridCell.Bubble)
                 {
-                    var gridCell = hits[i + 1].collider.gameObject.GetComponent<GridCell>();
-                    if (gridCell && gridCell.Bubble)
-                    {
-                        hitCellContainingBubble = true;
-                        validIndex = i;
-                        break;
-                    }
+                    continue;
                 }
+                
+                var closestGridCell = FindClosestEmptyCell(hitGridCell, hits[i].point);
+                    
+                if (!closestGridCell)
+                {
+                    throw new Exception("An error occurred when attempting to find an empty grid cell in the hit results.");
+                }
+                    
+                _previewBubble = Instantiate(_bubblePrefab, closestGridCell.transform);
+                _previewBubble.GetComponent<Bubble>().BubbleTypeProperty = Bubble.BubbleType.Debug;
+                _targetGridCell = closestGridCell;
+                return i;
             }
-            else
+            return i;
+        }
+
+        return -1;
+    }
+
+    private GridCell FindClosestEmptyCell(GridCell targetCell, Vector2 collisionPoint)
+    {
+        GridCell closestCell = null;
+        var closestDistance = float.MaxValue;
+        
+        foreach (var cell in targetCell.ConnectedCells)
+        {
+            if (cell.Bubble)
             {
-                validIndex = i;
-                break;
+                continue;
+            }
+            
+            float distance = Vector2.Distance(cell.transform.position, collisionPoint);
+            if (distance < closestDistance)
+            {
+                closestCell = cell;
+                closestDistance = distance;
             }
         }
 
-        return validIndex;
+        return closestCell;
     }
 
     IEnumerator LaunchBubbleCoroutine()
@@ -225,10 +264,27 @@ public class Launcher : MonoBehaviour
             _bubbleRigidBody.MovePosition(endPosition);
         }
 
-        var bubble = _currentBubble.GetComponent<Bubble>();
-        bubble.PlaceBubble();
+        PlaceBubble();
+    }
+
+    private void PlaceBubble()
+    {
+        if (!_currentBubble)
+        {
+            throw new Exception("Bubble was missing when attempting to place it in target grid cell.");
+        }
+        
+        if (!_targetGridCell)
+        {
+            throw new Exception("Target cell was missing when attempting to place bubble.");
+        }
+
+        _targetGridCell.Bubble = _currentBubble;
+        _currentBubble.transform.parent = _targetGridCell.transform;
+        _currentBubble.transform.localPosition = Vector3.zero;
+
         _isLaunching = false;
         _currentBubble = null;
-        _launchBubbleCoroutineRunning = false;        
+        _launchBubbleCoroutineRunning = false;     
     }
 }

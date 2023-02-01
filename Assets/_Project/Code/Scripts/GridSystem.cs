@@ -97,7 +97,27 @@ public class GridSystem : MonoBehaviour
                 
                 var gridCell = cell.GetComponent<GridCell>();
                 gridCell.GridPosition = new Vector2Int(row, column);
-                gridCell.GetComponent<BoxCollider2D>().size = new Vector2(Bubble.BubbleScale, Bubble.BubbleScale);
+
+                int invertOffsetMultiplier = 0;
+                if (column == 0)
+                {
+                    invertOffsetMultiplier = -1;
+                }
+                else if (column == columnCount - 1)
+                {
+                    invertOffsetMultiplier = 1;
+                }
+
+                var colliderOffset = new Vector2(invertOffsetMultiplier * (Bubble.BubbleScale / 2f), 0f);
+                var colliderSize =
+                    new Vector2(
+                        isRowOdd && (column == 0 || column == columnCount - 1)
+                            ? Bubble.BubbleScale * 2f
+                            : Bubble.BubbleScale, Bubble.BubbleScale);
+                
+                var boxCollider = gridCell.GetComponent<BoxCollider2D>();
+                boxCollider.offset = colliderOffset;
+                boxCollider.size = colliderSize;
             }
         }
 
@@ -287,7 +307,7 @@ public class GridSystem : MonoBehaviour
 
         foreach (var position in positionsToCheck.Where(position => IsValidGridPosition(position.x, position.y)))
         {
-            gridCell.AddConnectedCell(_grid[position.x][position.y]);
+            gridCell.AddConnectedCell(GetGridCell(position.x, position.y));
         }
     }
 
