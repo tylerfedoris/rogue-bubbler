@@ -3,7 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - TopBoundary
+  - BottomBoundary
+  - Bubble_Blue
+  - Blocker
+  - LeftBoundary
+  - RightBoundary
+  - Bubble
+  - Cell
   layers:
   - Default
   - TransparentFX

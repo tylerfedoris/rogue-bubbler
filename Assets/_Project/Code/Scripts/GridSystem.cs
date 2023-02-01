@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,7 +31,9 @@ public class GridSystem : MonoBehaviour
     
     [SerializeField] private GameObject _cellPrefab;
 
-    [SerializeField] private GameObject[] _bubblePrefabs;
+    [SerializeField] private GameObject _bubblePrefab;
+
+    [SerializeField] private Bubble.BubbleType[] _bubbleTypes; 
     
     [SerializeField] private GameObject _blockerPrefab;
 
@@ -51,42 +52,13 @@ public class GridSystem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        InitializeGrid();
+        GenerateGrid();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            InitializeGrid();
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            _gridWidth = GridWidth.Wide;
-            InitializeGrid();
-        }
         
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            _gridWidth = GridWidth.Narrow;
-            InitializeGrid();
-        }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            _currentLevel++;
-            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
-            InitializeGrid();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            _currentLevel--;
-            Debug.LogFormat("CurrentLevel: {0}", _currentLevel);
-            InitializeGrid();
-        }
     }
 
     private int GetTotalCells(int maxRows, int maxColumns)
@@ -94,11 +66,11 @@ public class GridSystem : MonoBehaviour
         return (maxRows * maxColumns) - (maxRows / 2);
     }
 
-    private void InitializeGrid()
+    private void GenerateGrid()
     {
         ClearGrid();
-        
-        _cellSize = _cellPrefab.transform.localScale.x;
+
+        _cellSize = Bubble.BubbleScale;
         _gridDimensions.MaxRows = 14;
         _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
         _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
@@ -125,6 +97,27 @@ public class GridSystem : MonoBehaviour
                 
                 var gridCell = cell.GetComponent<GridCell>();
                 gridCell.GridPosition = new Vector2Int(row, column);
+
+                int invertOffsetMultiplier = 0;
+                if (column == 0)
+                {
+                    invertOffsetMultiplier = -1;
+                }
+                else if (column == columnCount - 1)
+                {
+                    invertOffsetMultiplier = 1;
+                }
+
+                var colliderOffset = new Vector2(invertOffsetMultiplier * (Bubble.BubbleScale / 2f), 0f);
+                var colliderSize =
+                    new Vector2(
+                        isRowOdd && (column == 0 || column == columnCount - 1)
+                            ? Bubble.BubbleScale * 2f
+                            : Bubble.BubbleScale, Bubble.BubbleScale);
+                
+                var boxCollider = gridCell.GetComponent<BoxCollider2D>();
+                boxCollider.offset = colliderOffset;
+                boxCollider.size = colliderSize;
             }
         }
 
@@ -265,8 +258,17 @@ public class GridSystem : MonoBehaviour
             Debug.LogErrorFormat("ERROR: {0} already has a bubble", gridCell.gameObject.name);
         }
         
-        var objectToSpawn = spawnBlocker ? _blockerPrefab : _bubblePrefabs[UnityEngine.Random.Range(0, _bubblePrefabs.Length)];
-        gridCell.Bubble = Instantiate(objectToSpawn, gridCell.transform);
+        gridCell.Bubble = Instantiate(_bubblePrefab, gridCell.transform);
+        gridCell.Bubble.GetComponent<Collider2D>().enabled = false;
+        var bubbleType = spawnBlocker
+            ? Bubble.BubbleType.Blocker
+            : _bubbleTypes[UnityEngine.Random.Range(0, _bubbleTypes.Length)];
+        var bubble = gridCell.Bubble.GetComponent<Bubble>();
+        if (!bubble)
+        {
+            throw new Exception("No Bubble script was found on the instantiated bubble GameObject.");
+        }
+        bubble.BubbleTypeProperty = bubbleType;
         numBubblesToSpawn--;
     }
 
@@ -305,7 +307,7 @@ public class GridSystem : MonoBehaviour
 
         foreach (var position in positionsToCheck.Where(position => IsValidGridPosition(position.x, position.y)))
         {
-            gridCell.AddConnectedCell(_grid[position.x][position.y]);
+            gridCell.AddConnectedCell(GetGridCell(position.x, position.y));
         }
     }
 
@@ -341,9 +343,9 @@ public class GridSystem : MonoBehaviour
             return;
         }
         
-        for (int row = 0; row < _grid.Length; row++)
+        for (var row = 0; row < _grid.Length; row++)
         {
-            for (int column = 0; column < _grid[row].Length; column++)
+            for (var column = 0; column < _grid[row].Length; column++)
             {
                 Destroy(_grid[row][column].gameObject);
             }

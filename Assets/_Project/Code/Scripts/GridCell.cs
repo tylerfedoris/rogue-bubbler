@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ public class GridCell : MonoBehaviour
     
     [SerializeField] private GameObject _bubble;
 
-    [SerializeField] private List<GameObject> _connectedCells = new();
+    [SerializeField] private List<GridCell> _connectedCells = new();
 
     public Vector2Int GridPosition
     {
@@ -25,7 +24,7 @@ public class GridCell : MonoBehaviour
         set => _bubble = value;
     }
     
-    public List<GameObject> ConnectedCells
+    public List<GridCell> ConnectedCells
     {
         get => _connectedCells;
         set => _connectedCells = value;
@@ -34,16 +33,14 @@ public class GridCell : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
-    public void AddConnectedCell(GameObject cell)
+    public void AddConnectedCell(GridCell cell)
     {
         _connectedCells.Add(cell);
     }
