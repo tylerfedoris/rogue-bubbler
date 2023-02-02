@@ -97,27 +97,9 @@ public class GridSystem : MonoBehaviour
                 
                 var gridCell = cell.GetComponent<GridCell>();
                 gridCell.GridPosition = new Vector2Int(row, column);
-
-                int invertOffsetMultiplier = 0;
-                if (column == 0)
-                {
-                    invertOffsetMultiplier = -1;
-                }
-                else if (column == columnCount - 1)
-                {
-                    invertOffsetMultiplier = 1;
-                }
-
-                var colliderOffset = new Vector2(invertOffsetMultiplier * (Bubble.BubbleScale / 2f), 0f);
-                var colliderSize =
-                    new Vector2(
-                        isRowOdd && (column == 0 || column == columnCount - 1)
-                            ? Bubble.BubbleScale * 2f
-                            : Bubble.BubbleScale, Bubble.BubbleScale);
                 
-                var boxCollider = gridCell.GetComponent<BoxCollider2D>();
-                boxCollider.offset = colliderOffset;
-                boxCollider.size = colliderSize;
+                var cellCollider = cell.GetComponent<CircleCollider2D>();
+                cellCollider.radius = _cellSize / 2f;
             }
         }
 
@@ -259,7 +241,7 @@ public class GridSystem : MonoBehaviour
         }
         
         gridCell.Bubble = Instantiate(_bubblePrefab, gridCell.transform);
-        gridCell.Bubble.GetComponent<Collider2D>().enabled = false;
+        // gridCell.Bubble.GetComponent<Collider2D>().enabled = false;
         var bubbleType = spawnBlocker
             ? Bubble.BubbleType.Blocker
             : _bubbleTypes[UnityEngine.Random.Range(0, _bubbleTypes.Length)];
