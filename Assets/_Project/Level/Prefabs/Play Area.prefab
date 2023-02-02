@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cc373c9f61b10b44b9d3d55f0918643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridWidth: 1
+  _gridWidth: 0
   _cellPrefab: {fileID: 9176593198226233252, guid: d0c12ba07c0cb2749b87139071840935, type: 3}
   _bubblePrefab: {fileID: 997117890731797050, guid: 62c3ced70b290c6418a3d048766d7f0f, type: 3}
   _bubbleTypes: 00000000010000000200000003000000
