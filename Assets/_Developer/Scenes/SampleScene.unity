@@ -15297,7 +15297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _renderMaxAimLine
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _showPreviewBubble

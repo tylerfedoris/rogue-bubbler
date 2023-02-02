@@ -13,14 +13,14 @@ public class Launcher : MonoBehaviour
     }
     
     [SerializeField] private bool _showPreviewBubble = false;
-    [SerializeField] private bool _renderAimLine = false;
+    [SerializeField] private bool _renderAimLine = true;
     [SerializeField] private bool _renderMaxAimLine = true;
-    [SerializeField] private float _aimLineSize = 2f;
+    [SerializeField] private float _aimLineLength = 2f;
+    
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
     [SerializeField] private float _launchSpeed = 60.0f;
     [SerializeField] private int _maxCollisionPoints = 10;
-    [SerializeField] private float _aimLineLength = 2f;
     [SerializeField] private Transform _bubbleSlot;
     [SerializeField] private GameObject _bubblePrefab;
     [SerializeField] private string _topBoundaryTag = "TopBoundary";
@@ -102,7 +102,7 @@ public class Launcher : MonoBehaviour
 
     private void OnLaunch()
     {
-        if (!_isLaunching)
+        if (!_isLaunching && _currentBubble)
         {
             _isLaunching = true;
             _currentBubble.transform.parent = null;
@@ -353,6 +353,7 @@ public class Launcher : MonoBehaviour
 
         _isLaunching = false;
         _currentBubble = null;
+        _bubbleRigidBody = null;
         _launchBubbleCoroutineRunning = false;     
     }
 }

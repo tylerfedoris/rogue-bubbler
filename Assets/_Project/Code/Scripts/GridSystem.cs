@@ -241,7 +241,6 @@ public class GridSystem : MonoBehaviour
         }
         
         gridCell.Bubble = Instantiate(_bubblePrefab, gridCell.transform);
-        // gridCell.Bubble.GetComponent<Collider2D>().enabled = false;
         var bubbleType = spawnBlocker
             ? Bubble.BubbleType.Blocker
             : _bubbleTypes[UnityEngine.Random.Range(0, _bubbleTypes.Length)];
