@@ -164,13 +164,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5953001a08e702644b2789c4221517a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _showPreviewBubble: 0
   _rotateSpeed: 100
   _maxRotationDegrees: 60
-  _launchSpeed: 100
+  _launchSpeed: 10
   _maxCollisionPoints: 3
   _bubbleSlot: {fileID: 173441063}
   _bubblePrefab: {fileID: 997117890731797050, guid: 62c3ced70b290c6418a3d048766d7f0f, type: 3}
   _topBoundaryTag: TopBoundary
+  _bubbleTag: Bubble
+  _cellTag: Cell
 --- !u!114 &96791299733239412
 MonoBehaviour:
   m_ObjectHideFlags: 0

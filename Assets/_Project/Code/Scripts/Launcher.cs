@@ -6,6 +6,13 @@ using UnityEngine.InputSystem;
 
 public class Launcher : MonoBehaviour
 {
+    private struct CollisionPoint
+    {
+        public Vector2 Point;
+        public Vector2 Centroid;
+    }
+    
+    [SerializeField] private bool _showPreviewBubble = false;
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
     [SerializeField] private float _launchSpeed = 60.0f;
@@ -26,7 +33,7 @@ public class Launcher : MonoBehaviour
     private Vector2 _launchDirection;
     private LineRenderer _lineRenderer;
     private float _collisionRadius;
-    private List<Vector2> _collisionPoints;
+    private List<CollisionPoint> _collisionPoints;
     private float _elapsedLaunchTime;
     private Transform _bubbleSlotTransform;
     private bool _launchBubbleCoroutineRunning;
@@ -39,9 +46,8 @@ public class Launcher : MonoBehaviour
         _launcherTransform = transform;
         _lineRenderer = GetComponent<LineRenderer>();
         _launchDirection = _launcherTransform.up;
-        _collisionRadius = Bubble.BubbleScale / 4f;
+        _collisionRadius = Bubble.BubbleScale / 2f;
         _bubbleSlotTransform = _bubbleSlot.transform;
-        SpawnNextBubble();
     }
 
     // Update is called once per frame
@@ -119,7 +125,7 @@ public class Launcher : MonoBehaviour
     {
         var startingLaunchPosition = _bubbleSlotTransform.position;
         
-        _collisionPoints = new List<Vector2>();
+        _collisionPoints = new List<CollisionPoint>();
         GetCollisionPoints(startingLaunchPosition);
 
         _lineRenderer.positionCount = _collisionPoints.Count + 1;
@@ -127,7 +133,7 @@ public class Launcher : MonoBehaviour
 
         for (var i = 0; i < _collisionPoints.Count; i++)
         {
-            _lineRenderer.SetPosition(i + 1, _collisionPoints[i]);
+            _lineRenderer.SetPosition(i + 1, _collisionPoints[i].Point);
         }
     }
 
@@ -153,7 +159,10 @@ public class Launcher : MonoBehaviour
             return;
         }
 
-        _collisionPoints.Add(_targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].point);
+        Vector2 point = _targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].point;
+        Vector2 centroid = _targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].centroid;
+
+        _collisionPoints.Add(new CollisionPoint{ Point = point, Centroid = centroid });
         var prevHit = hitResults[validHitIndex];
 
         while (!_targetGridCell && _collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag) && !prevHit.collider.CompareTag(_bubbleTag))
@@ -172,13 +181,13 @@ public class Launcher : MonoBehaviour
                 continue;
             }
 
-            if (_targetGridCell)
-            {
-                _collisionPoints.Add(_targetGridCell.transform.position);
-                continue;
-            }
+            // if (_targetGridCell)
+            // {
+            //     _collisionPoints.Add(_targetGridCell.transform.position);
+            //     continue;
+            // }
 
-            _collisionPoints.Add(hitResults[validHitIndex].point);
+            _collisionPoints.Add(new CollisionPoint{ Point = hitResults[validHitIndex].point, Centroid = hitResults[validHitIndex].centroid });
             launchPosition = prevHit.point;
             prevHit = hitResults[validHitIndex];
         }
@@ -201,28 +210,50 @@ public class Launcher : MonoBehaviour
                     continue;
                 }
                 
-                var closestGridCell = FindClosestEmptyCell(hitGridCell, hits[i].point);
+                var closestGridCell = FindClosestEmptyCell(hitGridCell, hits[i].centroid);
                     
                 if (!closestGridCell)
                 {
                     throw new Exception("An error occurred when attempting to find an empty grid cell in the hit results.");
                 }
-                    
-                _previewBubble = Instantiate(_bubblePrefab, closestGridCell.transform);
-                _previewBubble.GetComponent<Bubble>().BubbleTypeProperty = Bubble.BubbleType.Debug;
+
+                if (_showPreviewBubble)
+                {
+                    _previewBubble = Instantiate(_bubblePrefab, closestGridCell.transform);
+                    _previewBubble.GetComponent<Bubble>().BubbleTypeProperty = Bubble.BubbleType.Debug;   
+                }
+                
                 _targetGridCell = closestGridCell;
-                return i;
             }
+
+            if (hits[i].collider.CompareTag(_topBoundaryTag))
+            {
+                var closestGridCell = FindClosestEmptyCellInTopRow(hits[i].centroid);
+                    
+                if (!closestGridCell)
+                {
+                    throw new Exception("An error occurred when attempting to find an empty grid cell in the hit results.");
+                }
+                
+                if (_showPreviewBubble)
+                {
+                    _previewBubble = Instantiate(_bubblePrefab, closestGridCell.transform);
+                    _previewBubble.GetComponent<Bubble>().BubbleTypeProperty = Bubble.BubbleType.Debug;   
+                }
+                
+                _targetGridCell = closestGridCell;
+            }
+            
             return i;
         }
 
         return -1;
     }
 
-    private GridCell FindClosestEmptyCell(GridCell targetCell, Vector2 collisionPoint)
+    private GridCell FindClosestEmptyCell(GridCell targetCell, Vector2 collisionPoint, bool includeSelf = false)
     {
-        GridCell closestCell = null;
-        var closestDistance = float.MaxValue;
+        GridCell closestCell = includeSelf ? targetCell : null;
+        float closestDistance = includeSelf ? Vector2.Distance(targetCell.transform.position, collisionPoint) : float.MaxValue;
         
         foreach (var cell in targetCell.ConnectedCells)
         {
@@ -242,6 +273,33 @@ public class Launcher : MonoBehaviour
         return closestCell;
     }
 
+    private GridCell FindClosestEmptyCellInTopRow(Vector2 point)
+    {
+        var collisionResults = new List<Collider2D>();
+        var contactFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = ~(1 << 2),
+            useTriggers = true
+        };
+
+        if (Physics2D.OverlapCircle(point, _collisionRadius, contactFilter, collisionResults) <= 0)
+        {
+            return null;
+        }
+
+        foreach (var collision in collisionResults)
+        {
+            var gridCell = collision.GetComponent<Collider2D>().gameObject.GetComponent<GridCell>();
+            if (gridCell && !gridCell.Bubble && gridCell.GridPosition.x == 0)
+            {
+                return FindClosestEmptyCell(gridCell, point, true);
+            }
+        }
+
+        return null;
+    }
+
     IEnumerator LaunchBubbleCoroutine()
     {
         _launchBubbleCoroutineRunning = true;
@@ -249,9 +307,9 @@ public class Launcher : MonoBehaviour
         for (var i = 0; i < _collisionPoints.Count; i++)
         {
             var distanceTraveled = 0f;
-            var startPosition = i == 0 ? (Vector2)_bubbleSlotTransform.position : _collisionPoints[i - 1];
-            var endPosition = _collisionPoints[i];
-            var travelDistance = Vector2.Distance(startPosition, endPosition);
+            var startPosition = i == 0 ? (Vector2)_bubbleSlotTransform.position : _collisionPoints[i - 1].Centroid;
+            var endPosition = i < _collisionPoints.Count - 1 ? _collisionPoints[i].Centroid : (Vector2)_targetGridCell.transform.position;
+            float travelDistance = Vector2.Distance(startPosition, endPosition);
             while (distanceTraveled < travelDistance)
             {
                 var movePosition = Vector2.Lerp(startPosition, endPosition, distanceTraveled / travelDistance);
