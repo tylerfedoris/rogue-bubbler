@@ -45,6 +45,9 @@ public class GridSystem : MonoBehaviour
     private float _cellSize;
     private GridDimensions _gridDimensions;
     private int _totalCells;
+    private int _maxRows = 15;
+    private int _maxNarrowColumns = 11;
+    private int _maxWideColumns = 16;
     
     [SerializeField] private int _currentLevel = 1;
     [SerializeField] private int _maxRowGeneration = 8;
@@ -71,8 +74,8 @@ public class GridSystem : MonoBehaviour
         ClearGrid();
 
         _cellSize = Bubble.BubbleScale;
-        _gridDimensions.MaxRows = 14;
-        _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? 11 : 16;
+        _gridDimensions.MaxRows = _maxRows;
+        _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? _maxNarrowColumns : _maxWideColumns;
         _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
         _grid = new GameObject[_gridDimensions.MaxRows][];
 
