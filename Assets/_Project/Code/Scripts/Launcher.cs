@@ -11,11 +11,14 @@ public class Launcher : MonoBehaviour
         public Vector2 Point;
         public Vector2 Centroid;
     }
-    
+
     [SerializeField] private bool _showPreviewBubble = false;
     [SerializeField] private bool _renderAimLine = true;
     [SerializeField] private bool _renderMaxAimLine = true;
     [SerializeField] private float _aimLineLength = 2f;
+    
+    [SerializeField] private bool _showDebugCollisionPoints = false;
+    [SerializeField] private GameObject _debugCollisionPointPrefab;
     
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
@@ -26,21 +29,28 @@ public class Launcher : MonoBehaviour
     [SerializeField] private string _topBoundaryTag = "TopBoundary";
     [SerializeField] private string _cellTag = "Cell";
 
-    private float _rotateValue = 0f;
-    private bool _isLaunching = false;
+    private float _rotateValue;
+    private bool _isLaunching;
+    private bool _loadedNewBubble;
+    private float _elapsedLaunchTime;
+    private bool _launchBubbleCoroutineRunning;
+    
     private GameObject _currentBubble;
     private Rigidbody2D _bubbleRigidBody;
+    
+    private Transform _bubbleSlotTransform;
     private Transform _launcherTransform;
+    private LineRenderer _lineRenderer;
+    private GridCell _targetGridCell;
+    
     private Vector2 _prevLaunchDirection;
     private Vector2 _launchDirection;
-    private LineRenderer _lineRenderer;
+    
     private float _collisionRadius;
     private List<CollisionPoint> _collisionPoints;
-    private float _elapsedLaunchTime;
-    private Transform _bubbleSlotTransform;
-    private bool _launchBubbleCoroutineRunning;
+
     private GameObject _previewBubble;
-    private GridCell _targetGridCell;
+    private List<GameObject> _debugCollisionPoints = new();
 
     // Start is called before the first frame update
     private void Start()
@@ -72,8 +82,9 @@ public class Launcher : MonoBehaviour
             _lineRenderer.enabled = true;
             _prevLaunchDirection = _launchDirection;
             _launchDirection = _launcherTransform.up;
-            if (_prevLaunchDirection != _launchDirection)
+            if (_prevLaunchDirection != _launchDirection || _loadedNewBubble)
             {
+                _loadedNewBubble = false;
                 if (_targetGridCell)
                 {
                     _targetGridCell = null;
@@ -82,9 +93,20 @@ public class Launcher : MonoBehaviour
                 {
                     Destroy(_previewBubble);
                 }
+                ClearDebugCollisionPoints();
                 DetermineAimPath();
             }
         }
+    }
+
+    private void ClearDebugCollisionPoints()
+    {
+        foreach (var point in _debugCollisionPoints)
+        {
+            Destroy(point);
+        }
+        
+        _debugCollisionPoints.Clear();
     }
 
     private void RotateByZ(float angle)
@@ -117,6 +139,7 @@ public class Launcher : MonoBehaviour
         {
             _currentBubble.transform.localPosition = Vector3.zero;
             _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
+            _loadedNewBubble = true;
         }
     }
 
@@ -126,6 +149,14 @@ public class Launcher : MonoBehaviour
         
         _collisionPoints = new List<CollisionPoint>();
         GetCollisionPoints(startingLaunchPosition);
+        
+        if (_showDebugCollisionPoints)
+        {
+            foreach (var collisionPoint in _collisionPoints)
+            {
+                _debugCollisionPoints.Add(Instantiate(_debugCollisionPointPrefab, collisionPoint.Point, Quaternion.identity));
+            }
+        }
 
         if (!_renderAimLine)
         {
@@ -170,7 +201,7 @@ public class Launcher : MonoBehaviour
             return;
         }
 
-        Vector2 point = _targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].point;
+        var point = hitResults[validHitIndex].point;
         Vector2 centroid = _targetGridCell ? _targetGridCell.transform.position : hitResults[validHitIndex].centroid;
 
         _collisionPoints.Add(new CollisionPoint{ Point = point, Centroid = centroid });
@@ -194,7 +225,7 @@ public class Launcher : MonoBehaviour
 
             if (_targetGridCell)
             {
-                _collisionPoints.Add(new CollisionPoint{Point = _targetGridCell.transform.position, Centroid = _targetGridCell.transform.position});
+                _collisionPoints.Add(new CollisionPoint{Point = hitResults[validHitIndex].point, Centroid = _targetGridCell.transform.position});
                 continue;
             }
 
