@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class Bubble : MonoBehaviour
 {
-    static public float BlockerScale = 0.4f;
-    static public float BubbleScale = 0.5f;
-    
+    public const float BubbleScale = 0.5f;
+    private const float _blockerScale = 0.4f;
+
     [Serializable]
     public enum BubbleType
     {
@@ -79,7 +79,7 @@ public class Bubble : MonoBehaviour
             case BubbleType.Blocker:
                 spriteRenderer.sprite = _bubbleSprites.Blocker;
                 spriteRenderer.color = _bubbleSprites.BlockerColor;
-                _transform.localScale = new Vector3(BlockerScale, BlockerScale, BlockerScale);
+                _transform.localScale = new Vector3(_blockerScale, _blockerScale, _blockerScale);
                 break;           
             case BubbleType.Debug:
                 spriteRenderer.sprite = _bubbleSprites.Debug;

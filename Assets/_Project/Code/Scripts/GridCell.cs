@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GridCell : MonoBehaviour
 {
-    public static event Action<Vector2Int> OnBubblePlaced;
-    
     [SerializeField] private Vector2Int _gridPosition;
     
     [SerializeField] private GameObject _bubble;

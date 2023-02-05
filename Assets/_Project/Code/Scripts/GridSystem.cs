@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Project.Code.Scripts;
 using UnityEngine;
 
 public class GridSystem : MonoBehaviour
@@ -33,22 +34,25 @@ public class GridSystem : MonoBehaviour
 
     [SerializeField] private GameObject _bubblePrefab;
 
-    [SerializeField] private Bubble.BubbleType[] _bubbleTypes; 
-    
-    [SerializeField] private GameObject _blockerPrefab;
+    [SerializeField] private Bubble.BubbleType[] _bubbleTypes;
 
     [SerializeField] private Boundaries _boundaries;
     
     [SerializeField][Range(0f, 1f)] private float _chanceToSpawnBlocker = .25f;
 
+    private const int _maxRows = 15;
+    private const int _maxNarrowColumns = 11;
+    private const int _maxWideColumns = 16;
+    
     private GameObject[][] _grid;
     private float _cellSize;
     private GridDimensions _gridDimensions;
     private int _totalCells;
-    private int _maxRows = 15;
-    private int _maxNarrowColumns = 11;
-    private int _maxWideColumns = 16;
+
+    [SerializeField] private SerializableDictionary<Bubble.BubbleType, int> _bubbleTypesInPlay = new();
     
+    public SerializableDictionary<Bubble.BubbleType, int> BubbleTypesInPlay => _bubbleTypesInPlay;
+
     [SerializeField] private int _currentLevel = 1;
     [SerializeField] private int _maxRowGeneration = 8;
 
@@ -64,6 +68,31 @@ public class GridSystem : MonoBehaviour
         
     }
 
+    private void OnEnable()
+    {
+        Launcher.OnBubblePlaced += HandleBubblePlaced;
+    }
+
+    private void OnDisable()
+    {
+        Launcher.OnBubblePlaced -= HandleBubblePlaced;
+    }
+
+    private void InitBubbleTypesInPlay()
+    {
+        foreach (Bubble.BubbleType bubbleType in Enum.GetValues(typeof(Bubble.BubbleType)))
+        {
+            if (_bubbleTypesInPlay.ContainsKey(bubbleType))
+            {
+                _bubbleTypesInPlay[bubbleType] = 0;
+            }
+            else
+            {
+                _bubbleTypesInPlay.Add(bubbleType, 0);    
+            }
+        }
+    }
+
     private int GetTotalCells(int maxRows, int maxColumns)
     {
         return (maxRows * maxColumns) - (maxRows / 2);
@@ -71,6 +100,7 @@ public class GridSystem : MonoBehaviour
 
     private void GenerateGrid()
     {
+        InitBubbleTypesInPlay();
         ClearGrid();
 
         _cellSize = Bubble.BubbleScale;
@@ -253,6 +283,7 @@ public class GridSystem : MonoBehaviour
             throw new Exception("No Bubble script was found on the instantiated bubble GameObject.");
         }
         bubble.BubbleTypeProperty = bubbleType;
+        _bubbleTypesInPlay[bubbleType]++;
         numBubblesToSpawn--;
     }
 
@@ -333,6 +364,20 @@ public class GridSystem : MonoBehaviour
             {
                 Destroy(_grid[row][column].gameObject);
             }
+        }
+    }
+
+    private void HandleBubblePlaced(GridCell targetGridCell)
+    {
+        var bubbleType = targetGridCell.Bubble.GetComponent<Bubble>().BubbleTypeProperty;
+
+        if (_bubbleTypesInPlay.ContainsKey(bubbleType))
+        {
+            _bubbleTypesInPlay[bubbleType]++;
+        }
+        else
+        {
+            _bubbleTypesInPlay.Add(bubbleType, 1);
         }
     }
 }
