@@ -168,8 +168,9 @@ MonoBehaviour:
   _renderAimLine: 1
   _renderMaxAimLine: 1
   _aimLineLength: 2
-  _showDebugCollisionPoints: 0
+  _showDebugCollisionPoints: 1
   _debugCollisionPointPrefab: {fileID: 7024554868288133723, guid: 1d0c3ae57e94297409a604cae821e4b3, type: 3}
+  _gridSystem: {fileID: 0}
   _rotateSpeed: 100
   _maxRotationDegrees: 60
   _launchSpeed: 10
@@ -203,8 +204,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Mouse
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Keyboard
   m_DefaultActionMap: Launcher Actions
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

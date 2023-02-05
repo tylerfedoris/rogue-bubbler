@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Launcher : MonoBehaviour
 {
+    public static event Action<GridCell> OnBubblePlaced;
+    
     private struct CollisionPoint
     {
         public Vector2 Point;
@@ -19,12 +22,14 @@ public class Launcher : MonoBehaviour
     
     [SerializeField] private bool _showDebugCollisionPoints = false;
     [SerializeField] private GameObject _debugCollisionPointPrefab;
-    
+
+    [SerializeField] private GridSystem _gridSystem;
     [SerializeField] private float _rotateSpeed = 100.0f;
     [SerializeField] private float _maxRotationDegrees = 60.0f;
     [SerializeField] private float _launchSpeed = 60.0f;
     [SerializeField] private int _maxCollisionPoints = 10;
     [SerializeField] private Transform _bubbleSlot;
+    [SerializeField] private Transform _bubbleOnDeckSlot;
     [SerializeField] private GameObject _bubblePrefab;
     [SerializeField] private string _topBoundaryTag = "TopBoundary";
     [SerializeField] private string _cellTag = "Cell";
@@ -36,9 +41,9 @@ public class Launcher : MonoBehaviour
     private bool _launchBubbleCoroutineRunning;
     
     private GameObject _currentBubble;
+    private GameObject _bubbleOnDeck;
     private Rigidbody2D _bubbleRigidBody;
     
-    private Transform _bubbleSlotTransform;
     private Transform _launcherTransform;
     private LineRenderer _lineRenderer;
     private GridCell _targetGridCell;
@@ -59,7 +64,6 @@ public class Launcher : MonoBehaviour
         _lineRenderer = GetComponent<LineRenderer>();
         _launchDirection = _launcherTransform.up;
         _collisionRadius = Bubble.BubbleScale / 2f;
-        _bubbleSlotTransform = _bubbleSlot.transform;
     }
 
     // Update is called once per frame
@@ -77,7 +81,7 @@ public class Launcher : MonoBehaviour
         {
             if (!_currentBubble)
             {
-                SpawnNextBubble();
+                GetNextBubble();
             }
             _lineRenderer.enabled = true;
             _prevLaunchDirection = _launchDirection;
@@ -131,21 +135,42 @@ public class Launcher : MonoBehaviour
         }
     }
 
-    private void SpawnNextBubble()
+    private void GetNextBubble()
     {
-        _currentBubble = Instantiate(_bubblePrefab, _bubbleSlot);
-
-        if (_currentBubble)
+        if (!_bubbleOnDeck)
         {
-            _currentBubble.transform.localPosition = Vector3.zero;
-            _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
-            _loadedNewBubble = true;
+            SpawnBubbleOnDeck();
         }
+
+        _currentBubble = _bubbleOnDeck;
+        _currentBubble.transform.parent = _bubbleSlot;
+        _currentBubble.transform.localPosition = Vector3.zero;
+        _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
+        _loadedNewBubble = true;
+
+        SpawnBubbleOnDeck();
+    }
+
+    private void SpawnBubbleOnDeck()
+    {
+        var validBubbleTypes = _gridSystem.BubbleTypesInPlay.Keys
+            .Where(bubbleType => bubbleType != Bubble.BubbleType.Blocker && _gridSystem.BubbleTypesInPlay[bubbleType] > 0).ToList();
+        
+        var randomBubbleType = validBubbleTypes[UnityEngine.Random.Range(0, validBubbleTypes.Count)];
+
+        _bubbleOnDeck = Instantiate(_bubblePrefab, _bubbleOnDeckSlot);
+        
+        if (!_bubbleOnDeck)
+        {
+            throw new Exception("There was a problem instantiating a new bubble on deck.");
+        }
+        
+        _bubbleOnDeck.GetComponent<Bubble>().BubbleTypeProperty = randomBubbleType;
     }
 
     private void DetermineAimPath()
     {
-        var startingLaunchPosition = _bubbleSlotTransform.position;
+        var startingLaunchPosition = _bubbleSlot.position;
         
         _collisionPoints = new List<CollisionPoint>();
         GetCollisionPoints(startingLaunchPosition);
@@ -175,7 +200,7 @@ public class Launcher : MonoBehaviour
         }
         else
         {
-            _lineRenderer.SetPosition(1, startingLaunchPosition + _bubbleSlotTransform.up * _aimLineLength);
+            _lineRenderer.SetPosition(1, startingLaunchPosition + _bubbleSlot.up * _aimLineLength);
         }
     }
 
@@ -348,7 +373,7 @@ public class Launcher : MonoBehaviour
         for (var i = 0; i < _collisionPoints.Count; i++)
         {
             var distanceTraveled = 0f;
-            var startPosition = i == 0 ? (Vector2)_bubbleSlotTransform.position : _collisionPoints[i - 1].Centroid;
+            var startPosition = i == 0 ? (Vector2)_bubbleSlot.position : _collisionPoints[i - 1].Centroid;
             var endPosition = _collisionPoints[i].Centroid;
             float travelDistance = Vector2.Distance(startPosition, endPosition);
             while (distanceTraveled < travelDistance)
@@ -385,6 +410,8 @@ public class Launcher : MonoBehaviour
         _isLaunching = false;
         _currentBubble = null;
         _bubbleRigidBody = null;
-        _launchBubbleCoroutineRunning = false;     
+        _launchBubbleCoroutineRunning = false;
+        
+        OnBubblePlaced?.Invoke(_targetGridCell);
     }
 }
