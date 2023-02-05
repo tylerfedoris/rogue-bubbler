@@ -22,7 +22,7 @@ namespace _Project.Code.Scripts
         [SerializeField] private bool _renderMaxAimLine = true;
         [SerializeField] private float _aimLineLength = 2f;
     
-        [SerializeField] private bool _showDebugCollisionPoints = false;
+        [SerializeField] private bool _showDebugCollisionPoints;
         [SerializeField] private GameObject _debugCollisionPointPrefab;
 
         [SerializeField] private GridSystem _gridSystem;
@@ -123,11 +123,13 @@ namespace _Project.Code.Scripts
                 new Vector3(0f, 0f, Mathf.Clamp(desiredAngle, -_maxRotationDegrees, _maxRotationDegrees));
         }
 
+        // ReSharper disable once UnusedMember.Local
         private void OnRotate(InputValue value)
         {
             _rotateValue = -value.Get<float>();
         }
 
+        // ReSharper disable once UnusedMember.Local
         private void OnLaunch()
         {
             if (!_isLaunching && _currentBubble)
@@ -237,7 +239,7 @@ namespace _Project.Code.Scripts
             while (!_targetGridCell && _collisionPoints.Count <= _maxCollisionPoints && !prevHit.collider.CompareTag(_topBoundaryTag))
             {
                 hitResults.Clear();
-                var reflectionVector = Vector2.Reflect(prevHit.point - (Vector2)launchPosition, prevHit.normal).normalized;
+                var reflectionVector = Vector2.Reflect(prevHit.point - launchPosition, prevHit.normal).normalized;
                 if (Physics2D.CircleCast(prevHit.point, _collisionRadius, reflectionVector, contactFilter, hitResults) <= 0)
                 {
                     break;

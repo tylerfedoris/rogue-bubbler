@@ -29,16 +29,6 @@ namespace _Project.Code.Scripts
             set => _connectedCells = value;
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        }
-
         public void AddConnectedCell(GridCell cell)
         {
             _connectedCells.Add(cell);
