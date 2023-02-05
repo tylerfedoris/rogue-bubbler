@@ -6,6 +6,8 @@ namespace _Project.Code.Scripts
 {
     public class Bubble : MonoBehaviour
     {
+        public static event Action<BubbleType> OnBubbleDestroyed;
+            
         public const float BubbleScale = 0.5f;
         private const float _blockerScale = 0.4f;
 
@@ -99,6 +101,11 @@ namespace _Project.Code.Scripts
         private void OnTriggerExit2D(Collider2D other)
         {
             _collidingObjects.Remove(other);
+        }
+
+        private void OnDestroy()
+        {
+            OnBubbleDestroyed?.Invoke(_bubbleType);
         }
     }
 }

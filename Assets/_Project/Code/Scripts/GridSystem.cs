@@ -72,11 +72,13 @@ namespace _Project.Code.Scripts
         private void OnEnable()
         {
             Launcher.OnBubblePlaced += HandleBubblePlaced;
+            Bubble.OnBubbleDestroyed += DecrementBubbleTypeInPlay;
         }
 
         private void OnDisable()
         {
             Launcher.OnBubblePlaced -= HandleBubblePlaced;
+            Bubble.OnBubbleDestroyed -= DecrementBubbleTypeInPlay;
         }
 
         private void InitBubbleTypesInPlay()
@@ -371,7 +373,45 @@ namespace _Project.Code.Scripts
         private void HandleBubblePlaced(GridCell targetGridCell)
         {
             var bubbleType = targetGridCell.Bubble.GetComponent<Bubble>().BubbleTypeProperty;
+            IncrementBubbleTypeInPlay(bubbleType);
+            HandleBubbleMatches(targetGridCell, bubbleType);
+        }
 
+        private void HandleBubbleMatches(GridCell targetGridCell, Bubble.BubbleType bubbleType)
+        {
+            List<GameObject> matchedBubbles = new();
+            SearchConnectedCellsForBubbleType(targetGridCell.ConnectedCells, bubbleType, matchedBubbles);
+
+            if (matchedBubbles.Count > 2)
+            {
+                foreach (var bubble in matchedBubbles)
+                {
+                    // var spriteRenderer = bubble.GetComponent<SpriteRenderer>();
+                    // spriteRenderer.color = Color.white;
+                    Destroy(bubble);
+                }   
+            }
+        }
+
+        private void SearchConnectedCellsForBubbleType(List<GridCell> connectedCells, Bubble.BubbleType bubbleType, List<GameObject> matchedBubbles)
+        {
+            foreach (var gridCell in connectedCells)
+            {
+                if (!gridCell.Bubble)
+                {
+                    continue;
+                }
+                var bubble = gridCell.Bubble.GetComponent<Bubble>();
+                if (bubble.BubbleTypeProperty == bubbleType && !matchedBubbles.Contains(gridCell.Bubble))
+                {
+                    matchedBubbles.Add(gridCell.Bubble);
+                    SearchConnectedCellsForBubbleType(gridCell.ConnectedCells, bubbleType, matchedBubbles);
+                }
+            }
+        }
+
+        private void IncrementBubbleTypeInPlay(Bubble.BubbleType bubbleType)
+        {
             if (_bubbleTypesInPlay.ContainsKey(bubbleType))
             {
                 _bubbleTypesInPlay[bubbleType]++;
@@ -379,6 +419,18 @@ namespace _Project.Code.Scripts
             else
             {
                 _bubbleTypesInPlay.Add(bubbleType, 1);
+            }
+        }
+        
+        private void DecrementBubbleTypeInPlay(Bubble.BubbleType bubbleType)
+        {
+            if (_bubbleTypesInPlay.ContainsKey(bubbleType))
+            {
+                _bubbleTypesInPlay[bubbleType]--;
+            }
+            else
+            {
+                _bubbleTypesInPlay.Add(bubbleType, 0);
             }
         }
     }
