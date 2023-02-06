@@ -10,6 +10,9 @@ namespace _Project.Code.Scripts
         [SerializeField] private GameObject _bubble;
 
         [SerializeField] private List<GridCell> _connectedCells = new();
+        
+        public bool PendingBubbleDelete { get; set; }
+        public bool TaggedInSearch { get; set; }
 
         public Vector2Int GridPosition
         {

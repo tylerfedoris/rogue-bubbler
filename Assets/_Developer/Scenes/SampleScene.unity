@@ -15312,13 +15312,21 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: _rotateSpeed
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _renderAimLine
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _bubbleOnDeckSlot
       value: 
       objectReference: {fileID: 1537591324}
+    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: _maxRotationDegrees
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _showDebugCollisionPoints
       value: 0
@@ -15386,7 +15394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _currentLevel
-      value: 1
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _chanceToSpawnBlocker

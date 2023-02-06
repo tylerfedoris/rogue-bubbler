@@ -379,21 +379,28 @@ namespace _Project.Code.Scripts
 
         private void HandleBubbleMatches(GridCell targetGridCell, Bubble.BubbleType bubbleType)
         {
-            List<GameObject> matchedBubbles = new();
-            SearchConnectedCellsForBubbleType(targetGridCell.ConnectedCells, bubbleType, matchedBubbles);
+            Stack<GridCell> cellsWithMatchingBubbles = new();
+            cellsWithMatchingBubbles.Push(targetGridCell);
+            targetGridCell.PendingBubbleDelete = true;
+            SearchConnectedCellsForBubbleType(targetGridCell.ConnectedCells, bubbleType, cellsWithMatchingBubbles);
 
-            if (matchedBubbles.Count > 2)
+            bool validMatchingSetFound = cellsWithMatchingBubbles.Count > 2;
+
+            while(cellsWithMatchingBubbles.Count > 0)
             {
-                foreach (var bubble in matchedBubbles)
+                var currentGridCell = cellsWithMatchingBubbles.Pop();
+
+                if (validMatchingSetFound)
                 {
-                    // var spriteRenderer = bubble.GetComponent<SpriteRenderer>();
-                    // spriteRenderer.color = Color.white;
-                    Destroy(bubble);
-                }   
+                    Debug.LogFormat("Destroying bubble in {0}", currentGridCell.name);
+                    Destroy(currentGridCell.Bubble);
+                }
+                
+                currentGridCell.PendingBubbleDelete = false;
             }
         }
 
-        private void SearchConnectedCellsForBubbleType(List<GridCell> connectedCells, Bubble.BubbleType bubbleType, List<GameObject> matchedBubbles)
+        private void SearchConnectedCellsForBubbleType(List<GridCell> connectedCells, Bubble.BubbleType bubbleType, Stack<GridCell> cellsWithMatchingBubbles)
         {
             foreach (var gridCell in connectedCells)
             {
@@ -402,10 +409,11 @@ namespace _Project.Code.Scripts
                     continue;
                 }
                 var bubble = gridCell.Bubble.GetComponent<Bubble>();
-                if (bubble.BubbleTypeProperty == bubbleType && !matchedBubbles.Contains(gridCell.Bubble))
+                if (!gridCell.PendingBubbleDelete && bubble.BubbleTypeProperty == bubbleType)
                 {
-                    matchedBubbles.Add(gridCell.Bubble);
-                    SearchConnectedCellsForBubbleType(gridCell.ConnectedCells, bubbleType, matchedBubbles);
+                    cellsWithMatchingBubbles.Push(gridCell);
+                    gridCell.PendingBubbleDelete = true;
+                    SearchConnectedCellsForBubbleType(gridCell.ConnectedCells, bubbleType, cellsWithMatchingBubbles);
                 }
             }
         }
