@@ -388,16 +388,85 @@ namespace _Project.Code.Scripts
 
             while(cellsWithMatchingBubbles.Count > 0)
             {
-                var currentGridCell = cellsWithMatchingBubbles.Pop();
+                var matchingCell = cellsWithMatchingBubbles.Pop();
 
                 if (validMatchingSetFound)
                 {
-                    Debug.LogFormat("Destroying bubble in {0}", currentGridCell.name);
-                    Destroy(currentGridCell.Bubble);
+                    ProcessConnectedBubbles(matchingCell);
+                }
+                else
+                {
+                    matchingCell.PendingBubbleDelete = false;
+                    matchingCell.TaggedInSearch = false;
+                }
+            }
+        }
+
+        private void ProcessConnectedBubbles(GridCell rootCell)
+        {
+            Stack<GridCell> cellsToProcess = new();
+            Stack<GridCell> processedCells = new();
+            
+            cellsToProcess.Push(rootCell);
+            
+            foreach (var connectedCell in rootCell.ConnectedCells)
+            {
+                if (connectedCell.GridPosition.x < rootCell.GridPosition.x)
+                {
+                    processedCells.Push(connectedCell);
+                    connectedCell.TaggedInSearch = true;
+                    continue;
                 }
                 
-                currentGridCell.PendingBubbleDelete = false;
+                bool connectedBubblesAreSecure = GetNumberOfConnectedBubblesInCeiling(connectedCell, cellsToProcess) > 0;
+
+                while (cellsToProcess.Count > 0)
+                {
+                    var cell = cellsToProcess.Pop();
+                    if (!connectedBubblesAreSecure)
+                    {
+                        cell.PendingBubbleDelete = true;
+                    }
+                    processedCells.Push(cell);
+                }
             }
+
+            while (processedCells.Count > 0)
+            {
+                var cell = processedCells.Pop();
+
+                if (cell.PendingBubbleDelete && cell.Bubble)
+                {
+                    Destroy(cell.Bubble);
+                }
+
+                cell.TaggedInSearch = false;
+                cell.PendingBubbleDelete = false;
+            }
+        }
+
+        private int GetNumberOfConnectedBubblesInCeiling(GridCell rootCell, Stack<GridCell> cellsToProcess)
+        {
+            var numberOfConnectedBubblesInCeiling = 0;
+            
+            foreach (var cell in rootCell.ConnectedCells)
+            {
+                if (cell.PendingBubbleDelete || cell.TaggedInSearch || !cell.Bubble)
+                {
+                    continue;
+                }
+                
+                cellsToProcess.Push(cell);
+                cell.TaggedInSearch = true;
+
+                if (cell.GridPosition.x == 0)
+                {
+                    return numberOfConnectedBubblesInCeiling + 1;
+                }
+                numberOfConnectedBubblesInCeiling += GetNumberOfConnectedBubblesInCeiling(cell, cellsToProcess);
+            }
+
+            return numberOfConnectedBubblesInCeiling;
         }
 
         private void SearchConnectedCellsForBubbleType(List<GridCell> connectedCells, Bubble.BubbleType bubbleType, Stack<GridCell> cellsWithMatchingBubbles)
