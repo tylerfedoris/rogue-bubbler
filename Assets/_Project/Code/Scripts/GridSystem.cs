@@ -375,6 +375,7 @@ namespace _Project.Code.Scripts
             var bubbleType = targetGridCell.Bubble.GetComponent<Bubble>().BubbleTypeProperty;
             IncrementBubbleTypeInPlay(bubbleType);
             HandleBubbleMatches(targetGridCell, bubbleType);
+            VerifyGrid();
         }
 
         private void HandleBubbleMatches(GridCell targetGridCell, Bubble.BubbleType bubbleType)
@@ -385,6 +386,8 @@ namespace _Project.Code.Scripts
             SearchConnectedCellsForBubbleType(targetGridCell.ConnectedCells, bubbleType, cellsWithMatchingBubbles);
 
             bool validMatchingSetFound = cellsWithMatchingBubbles.Count > 2;
+            
+            Stack<GridCell> processedCells = new();
 
             while(cellsWithMatchingBubbles.Count > 0)
             {
@@ -392,45 +395,14 @@ namespace _Project.Code.Scripts
 
                 if (validMatchingSetFound)
                 {
-                    ProcessConnectedBubbles(matchingCell);
+                    ProcessConnectedBubbles(matchingCell, processedCells);
                 }
                 else
                 {
-                    matchingCell.PendingBubbleDelete = false;
-                    matchingCell.TaggedInSearch = false;
+                    matchingCell.ResetTags();
                 }
             }
-        }
-
-        private void ProcessConnectedBubbles(GridCell rootCell)
-        {
-            Stack<GridCell> cellsToProcess = new();
-            Stack<GridCell> processedCells = new();
             
-            cellsToProcess.Push(rootCell);
-            
-            foreach (var connectedCell in rootCell.ConnectedCells)
-            {
-                if (connectedCell.GridPosition.x < rootCell.GridPosition.x)
-                {
-                    processedCells.Push(connectedCell);
-                    connectedCell.TaggedInSearch = true;
-                    continue;
-                }
-                
-                bool connectedBubblesAreSecure = GetNumberOfConnectedBubblesInCeiling(connectedCell, cellsToProcess) > 0;
-
-                while (cellsToProcess.Count > 0)
-                {
-                    var cell = cellsToProcess.Pop();
-                    if (!connectedBubblesAreSecure)
-                    {
-                        cell.PendingBubbleDelete = true;
-                    }
-                    processedCells.Push(cell);
-                }
-            }
-
             while (processedCells.Count > 0)
             {
                 var cell = processedCells.Pop();
@@ -440,33 +412,83 @@ namespace _Project.Code.Scripts
                     Destroy(cell.Bubble);
                 }
 
-                cell.TaggedInSearch = false;
-                cell.PendingBubbleDelete = false;
+                cell.ResetTags();
             }
         }
 
-        private int GetNumberOfConnectedBubblesInCeiling(GridCell rootCell, Stack<GridCell> cellsToProcess)
+        private void ProcessConnectedBubbles(GridCell rootCell, Stack<GridCell> processedCells)
         {
-            var numberOfConnectedBubblesInCeiling = 0;
+            Stack<GridCell> visitedCells = new();
+
+            processedCells.Push(rootCell);
             
+            foreach (var connectedCell in rootCell.ConnectedCells)
+            {
+                if (!connectedCell.Bubble || connectedCell.PendingBubbleDelete || connectedCell.VerifiedSecure)
+                {
+                    continue;
+                }
+                
+                visitedCells.Push(connectedCell);
+                connectedCell.TaggedInSearch = true;
+
+                if (connectedCell.GridPosition.x == 0)
+                {
+                    ProcessVisitedCells(visitedCells, processedCells, true);   
+                }
+                else
+                {
+                    ValidateConnectedBubbles(connectedCell, visitedCells, processedCells);
+                    if (visitedCells.Count > 0)
+                    {
+                        ProcessVisitedCells(visitedCells, processedCells, false);
+                    }
+                }
+            }
+        }
+
+        private void ProcessVisitedCells(Stack<GridCell> visitedCells, Stack<GridCell> processedCells, bool connectedBubblesAreSecure)
+        {
+            while (visitedCells.Count > 0)
+            {
+                var cell = visitedCells.Pop();
+                if (!connectedBubblesAreSecure)
+                {
+                    cell.PendingBubbleDelete = true;
+                }
+                else
+                {
+                    if (!cell.PendingBubbleDelete)
+                    {
+                        cell.VerifiedSecure = true;   
+                    }
+                }
+                processedCells.Push(cell);
+            }
+        }
+
+        private void ValidateConnectedBubbles(GridCell rootCell, Stack<GridCell> visitedCells, Stack<GridCell> processedCells)
+        {
             foreach (var cell in rootCell.ConnectedCells)
             {
+                if (cell.VerifiedSecure || cell.GridPosition.x == 0)
+                {
+                    visitedCells.Push(cell);
+                    cell.TaggedInSearch = true;
+                    ProcessVisitedCells(visitedCells, processedCells, true);
+                    return;
+                }
+
                 if (cell.PendingBubbleDelete || cell.TaggedInSearch || !cell.Bubble)
                 {
                     continue;
                 }
                 
-                cellsToProcess.Push(cell);
+                visitedCells.Push(cell);
                 cell.TaggedInSearch = true;
-
-                if (cell.GridPosition.x == 0)
-                {
-                    return numberOfConnectedBubblesInCeiling + 1;
-                }
-                numberOfConnectedBubblesInCeiling += GetNumberOfConnectedBubblesInCeiling(cell, cellsToProcess);
+                
+                ValidateConnectedBubbles(cell, visitedCells, processedCells);
             }
-
-            return numberOfConnectedBubblesInCeiling;
         }
 
         private void SearchConnectedCellsForBubbleType(List<GridCell> connectedCells, Bubble.BubbleType bubbleType, Stack<GridCell> cellsWithMatchingBubbles)
@@ -508,6 +530,21 @@ namespace _Project.Code.Scripts
             else
             {
                 _bubbleTypesInPlay.Add(bubbleType, 0);
+            }
+        }
+
+        private void VerifyGrid()
+        {
+            for (var row = 0; row < _grid.Length; row++)
+            {
+                for (var column = 0; column < _grid[row].Length; column++)
+                {
+                    var gridCell = GetGridCell(row, column);
+                    if (gridCell.PendingBubbleDelete || gridCell.TaggedInSearch)
+                    {
+                        Debug.LogFormat("Grid cell ({0},{1}) has a pending bubble delete or tagged", row, column);
+                    }
+                }
             }
         }
     }

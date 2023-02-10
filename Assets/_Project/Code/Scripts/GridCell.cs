@@ -13,6 +13,7 @@ namespace _Project.Code.Scripts
         
         public bool PendingBubbleDelete { get; set; }
         public bool TaggedInSearch { get; set; }
+        public bool VerifiedSecure { get; set; }
 
         public Vector2Int GridPosition
         {
@@ -24,6 +25,13 @@ namespace _Project.Code.Scripts
         {
             get => _bubble;
             set => _bubble = value;
+        }
+
+        public void ResetTags()
+        {
+            PendingBubbleDelete = false;
+            TaggedInSearch = false;
+            VerifiedSecure = false;
         }
     
         public List<GridCell> ConnectedCells
