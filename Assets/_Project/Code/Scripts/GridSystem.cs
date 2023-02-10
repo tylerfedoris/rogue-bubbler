@@ -471,6 +471,11 @@ namespace _Project.Code.Scripts
         {
             foreach (var cell in rootCell.ConnectedCells)
             {
+                if (!cell.Bubble || cell.PendingBubbleDelete)
+                {
+                    continue;
+                }
+                
                 if (cell.VerifiedSecure || cell.GridPosition.x == 0)
                 {
                     visitedCells.Push(cell);
@@ -479,7 +484,7 @@ namespace _Project.Code.Scripts
                     return;
                 }
 
-                if (cell.PendingBubbleDelete || cell.TaggedInSearch || !cell.Bubble)
+                if (cell.TaggedInSearch)
                 {
                     continue;
                 }

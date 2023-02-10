@@ -15331,6 +15331,10 @@ PrefabInstance:
       propertyPath: _showDebugCollisionPoints
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Mouse
+      objectReference: {fileID: 0}
     - target: {fileID: 3073924807551377228, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Name
       value: Launcher
@@ -15394,7 +15398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _currentLevel
-      value: 50
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _chanceToSpawnBlocker
