@@ -1,50 +1,53 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridCell : MonoBehaviour
+namespace _Project.Code.Scripts
 {
-    [SerializeField] private Vector2Int _gridPosition;
+    public class GridCell : MonoBehaviour
+    {
+        [SerializeField] private Vector2Int _gridPosition;
     
-    [SerializeField] private GameObject _bubble;
+        [SerializeField] private GameObject _bubble;
 
-    [SerializeField] private List<GridCell> _connectedCells = new();
+        [SerializeField] private List<GridCell> _connectedCells = new();
+        
+        public bool PendingBubbleDelete { get; set; }
+        public bool TaggedInSearch { get; set; }
+        public bool VerifiedSecure { get; set; }
 
-    public Vector2Int GridPosition
-    {
-        get => _gridPosition;
-        set => _gridPosition = value;
-    }
+        public Vector2Int GridPosition
+        {
+            get => _gridPosition;
+            set => _gridPosition = value;
+        }
     
-    public GameObject Bubble
-    {
-        get => _bubble;
-        set => _bubble = value;
-    }
+        public GameObject Bubble
+        {
+            get => _bubble;
+            set => _bubble = value;
+        }
+
+        public void ResetTags()
+        {
+            PendingBubbleDelete = false;
+            TaggedInSearch = false;
+            VerifiedSecure = false;
+        }
     
-    public List<GridCell> ConnectedCells
-    {
-        get => _connectedCells;
-        set => _connectedCells = value;
-    }
+        public List<GridCell> ConnectedCells
+        {
+            get => _connectedCells;
+            set => _connectedCells = value;
+        }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
+        public void AddConnectedCell(GridCell cell)
+        {
+            _connectedCells.Add(cell);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    public void AddConnectedCell(GridCell cell)
-    {
-        _connectedCells.Add(cell);
-    }
-
-    public void ClearConnectedCells()
-    {
-        _connectedCells.Clear();
+        public void ClearConnectedCells()
+        {
+            _connectedCells.Clear();
+        }
     }
 }

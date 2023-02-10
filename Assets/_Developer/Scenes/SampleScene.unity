@@ -15312,16 +15312,28 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: _rotateSpeed
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _renderAimLine
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _bubbleOnDeckSlot
       value: 
       objectReference: {fileID: 1537591324}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: _maxRotationDegrees
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _showDebugCollisionPoints
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Mouse
       objectReference: {fileID: 0}
     - target: {fileID: 3073924807551377228, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Name
