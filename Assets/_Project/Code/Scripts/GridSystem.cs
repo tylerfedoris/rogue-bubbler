@@ -49,6 +49,7 @@ namespace _Project.Code.Scripts
         private float _cellSize;
         private GridDimensions _gridDimensions;
         private int _totalCells;
+        private Transform _gridTransform;
 
         [SerializeField] private SerializableDictionary<Bubble.BubbleType, int> _bubbleTypesInPlay = new();
     
@@ -60,6 +61,7 @@ namespace _Project.Code.Scripts
         // Start is called before the first frame update
         private void Start()
         {
+            _gridTransform = transform;
             GenerateGrid();
         }
 
@@ -72,12 +74,14 @@ namespace _Project.Code.Scripts
         private void OnEnable()
         {
             Launcher.OnBubblePlaced += HandleBubblePlaced;
+            Launcher.OnLaunchLimitReached += ShiftGridDown;
             Bubble.OnBubbleDestroyed += DecrementBubbleTypeInPlay;
         }
 
         private void OnDisable()
         {
             Launcher.OnBubblePlaced -= HandleBubblePlaced;
+            Launcher.OnLaunchLimitReached -= ShiftGridDown;
             Bubble.OnBubbleDestroyed -= DecrementBubbleTypeInPlay;
         }
 
@@ -551,6 +555,12 @@ namespace _Project.Code.Scripts
                     }
                 }
             }
+        }
+
+        private void ShiftGridDown()
+        {
+            var gridPosition = _gridTransform.position;
+            _gridTransform.position = new Vector2(gridPosition.x, gridPosition.y - _cellSize);
         }
     }
 }
