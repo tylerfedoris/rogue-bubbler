@@ -45,6 +45,7 @@ namespace _Project.Code.Scripts
         private GameObject _currentBubble;
         private GameObject _bubbleOnDeck;
         private Rigidbody2D _bubbleRigidBody;
+        private Collider2D _bubbleCollider;
     
         private Transform _launcherTransform;
         private LineRenderer _lineRenderer;
@@ -149,6 +150,8 @@ namespace _Project.Code.Scripts
             _currentBubble = _bubbleOnDeck;
             _currentBubble.transform.parent = _bubbleSlot;
             _currentBubble.transform.localPosition = Vector3.zero;
+            _bubbleCollider = _currentBubble.GetComponent<Collider2D>();
+            _bubbleCollider.enabled = false;
             _bubbleRigidBody = _currentBubble.GetComponent<Rigidbody2D>();
             _loadedNewBubble = true;
 
@@ -411,11 +414,14 @@ namespace _Project.Code.Scripts
             _currentBubble.transform.parent = _targetGridCell.transform;
             _currentBubble.transform.localPosition = Vector3.zero;
 
+            _bubbleCollider.enabled = true;
+            
             _isLaunching = false;
             _currentBubble = null;
+            _bubbleCollider = null;
             _bubbleRigidBody = null;
             _launchBubbleCoroutineRunning = false;
-        
+
             OnBubblePlaced?.Invoke(_targetGridCell);
         }
     }
