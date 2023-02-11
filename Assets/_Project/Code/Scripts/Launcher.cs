@@ -10,6 +10,7 @@ namespace _Project.Code.Scripts
     public class Launcher : MonoBehaviour
     {
         public static event Action<GridCell> OnBubblePlaced;
+        public static event Action OnLaunchLimitReached;
     
         private struct CollisionPoint
         {
@@ -30,6 +31,7 @@ namespace _Project.Code.Scripts
         [SerializeField] private float _maxRotationDegrees = 60.0f;
         [SerializeField] private float _launchSpeed = 60.0f;
         [SerializeField] private int _maxCollisionPoints = 10;
+        [SerializeField] private int _maxLaunchesBeforeGridMovement = 7;
         [SerializeField] private Transform _bubbleSlot;
         [SerializeField] private Transform _bubbleOnDeckSlot;
         [SerializeField] private GameObject _bubblePrefab;
@@ -59,6 +61,8 @@ namespace _Project.Code.Scripts
 
         private GameObject _previewBubble;
         private List<GameObject> _debugCollisionPoints = new();
+
+        private int _numberOfLaunchesSinceLastGridMovement = 0;
 
         // Start is called before the first frame update
         private void Start()
@@ -415,6 +419,13 @@ namespace _Project.Code.Scripts
             _currentBubble.transform.localPosition = Vector3.zero;
 
             _bubbleCollider.enabled = true;
+            _numberOfLaunchesSinceLastGridMovement++;
+
+            if (_numberOfLaunchesSinceLastGridMovement > _maxLaunchesBeforeGridMovement)
+            {
+                OnLaunchLimitReached?.Invoke();
+                _numberOfLaunchesSinceLastGridMovement = 0;
+            }
             
             _isLaunching = false;
             _currentBubble = null;
