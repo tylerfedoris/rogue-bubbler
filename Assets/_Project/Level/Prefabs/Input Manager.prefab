@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2422952031067423036}
   - component: {fileID: 1400796747895838704}
+  - component: {fileID: 1727184462}
   m_Layer: 0
   m_Name: Input Manager
   m_TagString: Untagged
@@ -44,3 +45,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e37755704a0018f4aab34459b58e7b3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1727184462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3979339370089362891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: e31a9a0db326e9148a4b954ea9f7c28b, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UnityEngine.Component, UnityEngine
+        m_MethodName: SendMessage
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 5c2e9004-5093-4cb2-b034-7395c2995ca6
+    m_ActionName: Launcher/Rotate[/Mouse/delta/x,/Keyboard/leftArrow,/Keyboard/rightArrow,/XInputControllerWindows/leftStick/x]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 23c82835-884f-40b1-9312-0ac0a42ea4b1
+    m_ActionName: Launcher/Launch[/XInputControllerWindows/buttonSouth,/Mouse/leftButton,/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 45050b93-7a71-4fce-b172-01f1f6aa5950
+    m_ActionName: UI/Point[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1314b030-8fce-42f5-9ce8-42717ce84584
+    m_ActionName: UI/Click[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0fdcac32-ab53-45cd-b8e6-26e03e50b859
+    m_ActionName: UI/Submit[/Keyboard/enter,/XInputControllerWindows/buttonSouth]
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Mouse
+  m_DefaultActionMap: Launcher
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

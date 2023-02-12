@@ -887,7 +887,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 67582307}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 836491365}
+        m_TargetAssemblyTypeName: _Project.Code.Scripts.GameManager, Assembly-CSharp
+        m_MethodName: Restart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &67582307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6282,6 +6294,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 997117890731797188, guid: 22920b7855aaedb47b74c887be868b09, type: 3}
   m_PrefabInstance: {fileID: 696163840}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &836491365 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6844876498128421065, guid: 0796bfa42e5e4ca439336449fca2b39f, type: 3}
+  m_PrefabInstance: {fileID: 5531898893005238024}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded5c3a003e798e479706429d6b090a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &844458059
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13409,73 +13432,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 997117890731797188, guid: 22920b7855aaedb47b74c887be868b09, type: 3}
   m_PrefabInstance: {fileID: 264419202}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1727184461 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3979339370089362891, guid: 402c9b3f4d57f6a4199f35746b8faf94, type: 3}
-  m_PrefabInstance: {fileID: 5102657172162853189}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1727184462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1727184461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: e31a9a0db326e9148a4b954ea9f7c28b, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 2051411631}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1778564906}
-        m_TargetAssemblyTypeName: UnityEngine.Component, UnityEngine
-        m_MethodName: SendMessage
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 5c2e9004-5093-4cb2-b034-7395c2995ca6
-    m_ActionName: Launcher/Rotate[/Mouse/delta/x,/Keyboard/leftArrow,/Keyboard/rightArrow,/XInputControllerWindows/leftStick/x]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 23c82835-884f-40b1-9312-0ac0a42ea4b1
-    m_ActionName: Launcher/Launch[/XInputControllerWindows/buttonSouth,/Mouse/leftButton,/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 45050b93-7a71-4fce-b172-01f1f6aa5950
-    m_ActionName: UI/Point[/Mouse/position]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 1314b030-8fce-42f5-9ce8-42717ce84584
-    m_ActionName: UI/Click[/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0fdcac32-ab53-45cd-b8e6-26e03e50b859
-    m_ActionName: UI/Submit[/Keyboard/enter,/XInputControllerWindows/buttonSouth]
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Mouse
-  m_DefaultActionMap: Launcher
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!4 &1729697818 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 997117890731797188, guid: 22920b7855aaedb47b74c887be868b09, type: 3}
@@ -14979,23 +14935,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22920b7855aaedb47b74c887be868b09, type: 3}
---- !u!1 &1915921902 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5447751028055477682, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-  m_PrefabInstance: {fileID: 5107922066581844341}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1915921904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915921902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f9fe76513364f440a858cf4dab8679a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1916439284 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 997117890731797188, guid: 22920b7855aaedb47b74c887be868b09, type: 3}
@@ -16131,101 +16070,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 338574432}
     - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _launchSpeed
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _rotateSpeed
-      value: 75
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _renderAimLine
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: _bubbleOnDeckSlot
       value: 
       objectReference: {fileID: 1537591324}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _maxRotationDegrees
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239411, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: _showDebugCollisionPoints
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_UIInputModule
-      value: 
-      objectReference: {fileID: 2051411631}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_DefaultActionMap
-      value: Launcher
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_DefaultControlScheme
-      value: Mouse
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_NotificationBehavior
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[0].m_ActionId
-      value: 5c2e9004-5093-4cb2-b034-7395c2995ca6
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[1].m_ActionId
-      value: 23c82835-884f-40b1-9312-0ac0a42ea4b1
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[2].m_ActionId
-      value: 45050b93-7a71-4fce-b172-01f1f6aa5950
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_ActionId
-      value: 1314b030-8fce-42f5-9ce8-42717ce84584
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[4].m_ActionId
-      value: 0fdcac32-ab53-45cd-b8e6-26e03e50b859
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[0].m_ActionName
-      value: Launcher/Rotate[/Mouse/delta/x,/Keyboard/leftArrow,/Keyboard/rightArrow,/XInputControllerWindows/leftStick/x]
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[1].m_ActionName
-      value: Launcher/Launch[/XInputControllerWindows/buttonSouth,/Mouse/leftButton,/Keyboard/space]
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[2].m_ActionName
-      value: UI/Point[/Mouse/position]
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_ActionName
-      value: UI/Click[/Mouse/leftButton]
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[4].m_ActionName
-      value: UI/Submit[/Keyboard/enter,/XInputControllerWindows/buttonSouth]
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
-      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3073924807551377228, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
       propertyPath: m_Name
       value: Launcher
@@ -16274,8 +16121,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 96791299733239412, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 333d44bb4feca4d4da4ace10c170cea6, type: 3}
 --- !u!1001 &5102657172162853189
 PrefabInstance:
@@ -16284,6 +16130,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1727184462, guid: 402c9b3f4d57f6a4199f35746b8faf94, type: 3}
+      propertyPath: m_UIInputModule
+      value: 
+      objectReference: {fileID: 2051411631}
+    - target: {fileID: 1727184462, guid: 402c9b3f4d57f6a4199f35746b8faf94, type: 3}
+      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1778564906}
     - target: {fileID: 2422952031067423036, guid: 402c9b3f4d57f6a4199f35746b8faf94, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -16341,18 +16195,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _gridWidth
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _currentLevel
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
-      propertyPath: _chanceToSpawnBlocker
-      value: 0.15
-      objectReference: {fileID: 0}
     - target: {fileID: 2122709785323682321, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: m_Name
       value: Play Area

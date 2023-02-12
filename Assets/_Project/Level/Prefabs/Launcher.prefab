@@ -125,7 +125,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8266623169127897048}
   - component: {fileID: 96791299733239411}
-  - component: {fileID: 96791299733239412}
   - component: {fileID: 1031296279}
   m_Layer: 0
   m_Name: Launcher
@@ -168,47 +167,19 @@ MonoBehaviour:
   _renderAimLine: 1
   _renderMaxAimLine: 1
   _aimLineLength: 2
-  _showDebugCollisionPoints: 1
+  _showDebugCollisionPoints: 0
   _debugCollisionPointPrefab: {fileID: 7024554868288133723, guid: 1d0c3ae57e94297409a604cae821e4b3, type: 3}
   _gridSystem: {fileID: 0}
-  _rotateSpeed: 100
+  _rotateSpeed: 75
   _maxRotationDegrees: 60
-  _launchSpeed: 10
+  _launchSpeed: 15
   _maxCollisionPoints: 3
+  _maxLaunchesBeforeGridMovement: 7
   _bubbleSlot: {fileID: 173441063}
+  _bubbleOnDeckSlot: {fileID: 0}
   _bubblePrefab: {fileID: 997117890731797050, guid: 62c3ced70b290c6418a3d048766d7f0f, type: 3}
   _topBoundaryTag: TopBoundary
   _cellTag: Cell
---- !u!114 &96791299733239412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3073924807551377228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: e31a9a0db326e9148a4b954ea9f7c28b, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Keyboard
-  m_DefaultActionMap: Launcher Actions
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!120 &1031296279
 LineRenderer:
   m_ObjectHideFlags: 0

@@ -161,6 +161,12 @@ namespace _Project.Code.Scripts
                 SpawnBubbleOnDeck();
             }
 
+            // if we still don't have a bubble on deck, that means that the board is cleared of all colors so we can just return
+            if (!_bubbleOnDeck)
+            {
+                return;
+            }
+
             _currentBubble = _bubbleOnDeck;
             _currentBubble.transform.parent = _bubbleSlot;
             _currentBubble.transform.localPosition = Vector3.zero;
@@ -176,7 +182,12 @@ namespace _Project.Code.Scripts
         {
             var validBubbleTypes = _gridSystem.BubbleTypesInPlay.Keys
                 .Where(bubbleType => bubbleType != Bubble.BubbleType.Blocker && _gridSystem.BubbleTypesInPlay[bubbleType] > 0).ToList();
-        
+
+            if (validBubbleTypes.Count <= 0)
+            {
+                return;
+            }
+
             var randomBubbleType = validBubbleTypes[UnityEngine.Random.Range(0, validBubbleTypes.Count)];
 
             _bubbleOnDeck = Instantiate(_bubblePrefab, _bubbleOnDeckSlot);

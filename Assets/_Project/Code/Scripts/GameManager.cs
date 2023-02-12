@@ -5,14 +5,14 @@ namespace _Project.Code.Scripts
 {
     public class GameManager : MonoBehaviour
     {
-        public static event Action OnRestart;
-        
+        public static event Action OnStartNewGame;
+
         [SerializeField] private GameObject _gameOverPanel;
 
         // Start is called before the first frame update
         void Start()
         {
-        
+            StartNewGame();
         }
 
         // Update is called once per frame
@@ -36,9 +36,16 @@ namespace _Project.Code.Scripts
             _gameOverPanel.SetActive(true);
         }
 
-        private void Restart()
+        private void StartNewGame()
         {
-            OnRestart?.Invoke();
+            OnStartNewGame?.Invoke();
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public void Restart()
+        {
+            _gameOverPanel.SetActive(false);
+            StartNewGame();
         }
     }
 }
