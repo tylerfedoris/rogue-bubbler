@@ -38,6 +38,8 @@ namespace _Project.Code.Scripts
         [SerializeField] private Bubble.BubbleType[] _bubbleTypes;
 
         [SerializeField] private Boundaries _boundaries;
+        
+        [SerializeField] private GameObject _topBoundaryCollider;
     
         [SerializeField][Range(0f, 1f)] private float _chanceToSpawnBlocker = .25f;
 
@@ -50,6 +52,7 @@ namespace _Project.Code.Scripts
         private GridDimensions _gridDimensions;
         private int _totalCells;
         private Transform _gridTransform;
+        private Vector3 _gridStartPosition;
 
         [SerializeField] private SerializableDictionary<Bubble.BubbleType, int> _bubbleTypesInPlay = new();
     
@@ -62,7 +65,7 @@ namespace _Project.Code.Scripts
         private void Start()
         {
             _gridTransform = transform;
-            GenerateGrid();
+            _gridStartPosition = _gridTransform.position;
         }
 
         // Update is called once per frame
@@ -75,14 +78,25 @@ namespace _Project.Code.Scripts
         {
             Launcher.OnBubblePlaced += HandleBubblePlaced;
             Launcher.OnLaunchLimitReached += ShiftGridDown;
-            Bubble.OnBubbleDestroyed += DecrementBubbleTypeInPlay;
+            GameManager.OnStartNewGame += HandleStartNewGame;
         }
 
         private void OnDisable()
         {
             Launcher.OnBubblePlaced -= HandleBubblePlaced;
             Launcher.OnLaunchLimitReached -= ShiftGridDown;
-            Bubble.OnBubbleDestroyed -= DecrementBubbleTypeInPlay;
+            GameManager.OnStartNewGame -= HandleStartNewGame;
+        }
+        
+        private void HandleStartNewGame()
+        {
+            InitLevel(1);
+        }
+        
+        private void InitLevel(int level)
+        {
+            _currentLevel = level;
+            GenerateGrid();
         }
 
         private void InitBubbleTypesInPlay()
@@ -107,8 +121,8 @@ namespace _Project.Code.Scripts
 
         private void GenerateGrid()
         {
-            InitBubbleTypesInPlay();
             ClearGrid();
+            InitBubbleTypesInPlay();
 
             _cellSize = Bubble.BubbleScale;
             _gridDimensions.MaxRows = _maxRows;
@@ -165,6 +179,10 @@ namespace _Project.Code.Scripts
             var topBoundaryTransform = _boundaries.TopBoundary.transform;
             var topBoundaryScale = topBoundaryTransform.localScale;
             topBoundaryTransform.localScale = new Vector3(topBoundaryScale.x,_gridWidth == GridWidth.Narrow ? 6f : 8.5f, topBoundaryScale.z);
+            
+            var topBoundaryColliderTransform = _topBoundaryCollider.transform;
+            var topBoundaryColliderScale = topBoundaryColliderTransform.localScale;
+            topBoundaryColliderTransform.localScale = new Vector3(topBoundaryColliderScale.x,_gridWidth == GridWidth.Narrow ? 6f : 8.5f, topBoundaryColliderScale.z);
         
             var bottomBoundaryTransform = _boundaries.BottomBoundary.transform;
             var bottomBoundaryScale = bottomBoundaryTransform.localScale;
@@ -364,6 +382,8 @@ namespace _Project.Code.Scripts
             {
                 return;
             }
+
+            _gridTransform.position = _gridStartPosition;
         
             for (var row = 0; row < _grid.Length; row++)
             {
@@ -413,6 +433,7 @@ namespace _Project.Code.Scripts
 
                 if (cell.PendingBubbleDelete && cell.Bubble)
                 {
+                    DecrementBubbleTypeInPlay(cell.Bubble.GetComponent<Bubble>().BubbleTypeProperty);
                     Destroy(cell.Bubble);
                 }
 

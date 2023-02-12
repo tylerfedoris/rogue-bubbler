@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class FailureBoundary : MonoBehaviour
 {
+    public static event Action OnGameOver;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -19,9 +21,6 @@ public class FailureBoundary : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Bubble"))
-        {
-            Debug.Log("GAME OVER");   
-        }
+        OnGameOver?.Invoke();
     }
 }
