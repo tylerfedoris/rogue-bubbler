@@ -2,7 +2,7 @@
     "name": "Player Controls",
     "maps": [
         {
-            "name": "Launcher Actions",
+            "name": "Launcher",
             "id": "aa85122b-ebc8-41b3-b3c9-54caf046fc1c",
             "actions": [
                 {
@@ -116,13 +116,31 @@
             ]
         },
         {
-            "name": "UI Actions",
+            "name": "UI",
             "id": "2f0549b7-0b6d-4b69-9d1c-5061d3325633",
             "actions": [
                 {
-                    "name": "New action",
-                    "type": "Button",
+                    "name": "Point",
+                    "type": "PassThrough",
                     "id": "45050b93-7a71-4fce-b172-01f1f6aa5950",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "PassThrough",
+                    "id": "1314b030-8fce-42f5-9ce8-42717ce84584",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "0fdcac32-ab53-45cd-b8e6-26e03e50b859",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -133,11 +151,44 @@
                 {
                     "name": "",
                     "id": "2905f427-3cb6-4aca-be02-5499b195f485",
-                    "path": "",
+                    "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "New action",
+                    "groups": "Mouse",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "95ecba50-2859-43e3-abae-12f6c8e20e6a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44b167c8-028e-4510-997d-826de54e787b",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "501221c4-b96a-41a6-b824-99131aacca02",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

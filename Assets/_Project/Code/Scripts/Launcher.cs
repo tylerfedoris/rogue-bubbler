@@ -110,6 +110,18 @@ namespace _Project.Code.Scripts
             }
         }
 
+        private void OnEnable()
+        {
+            InputManager.OnInputRotate += HandleRotate;
+            InputManager.OnInputLaunch += HandleLaunch;
+        }
+
+        private void OnDisable()
+        {
+            InputManager.OnInputRotate -= HandleRotate;
+            InputManager.OnInputLaunch -= HandleLaunch;
+        }
+
         private void ClearDebugCollisionPoints()
         {
             foreach (var point in _debugCollisionPoints)
@@ -127,15 +139,13 @@ namespace _Project.Code.Scripts
             transform.eulerAngles =
                 new Vector3(0f, 0f, Mathf.Clamp(desiredAngle, -_maxRotationDegrees, _maxRotationDegrees));
         }
-
-        // ReSharper disable once UnusedMember.Local
-        private void OnRotate(InputValue value)
+        
+        private void HandleRotate(InputValue value)
         {
             _rotateValue = -value.Get<float>();
         }
-
-        // ReSharper disable once UnusedMember.Local
-        private void OnLaunch()
+        
+        private void HandleLaunch()
         {
             if (!_isLaunching && _currentBubble)
             {
