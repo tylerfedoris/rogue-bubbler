@@ -8,6 +8,7 @@ namespace _Project.Code.Scripts
     public class GridSystem : MonoBehaviour
     {
         public static event Action<int> OnLevelCompleted;
+        public static event Action<int> OnBubblesPopped;
         
         private struct GridDimensions
         {
@@ -429,7 +430,8 @@ namespace _Project.Code.Scripts
                     matchingCell.ResetTags();
                 }
             }
-            
+
+            var numBubblesPopped = 0;
             while (processedCells.Count > 0)
             {
                 var cell = processedCells.Pop();
@@ -438,10 +440,12 @@ namespace _Project.Code.Scripts
                 {
                     DecrementBubbleTypeInPlay(cell.Bubble.GetComponent<Bubble>().BubbleTypeProperty);
                     Destroy(cell.Bubble);
+                    numBubblesPopped++;
                 }
 
                 cell.ResetTags();
             }
+            OnBubblesPopped?.Invoke(numBubblesPopped);
         }
 
         private void ProcessConnectedBubbles(GridCell rootCell, Stack<GridCell> processedCells)

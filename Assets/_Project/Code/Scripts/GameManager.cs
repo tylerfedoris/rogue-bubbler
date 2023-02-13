@@ -9,9 +9,12 @@ namespace _Project.Code.Scripts
         public static event Action OnStartNewGame;
         public static event Action<int> OnStartLevel;
 
+        [SerializeField] private int _maxBubbleChain = 17;
         [SerializeField] private GameObject _gameOverPanel;
         [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private TextMeshProUGUI _scoreText;
+        
+        private int Score { get; set; }
 
         // Start is called before the first frame update
         void Start()
@@ -29,12 +32,14 @@ namespace _Project.Code.Scripts
         {
             FailureBoundary.OnGameOver += HandleGameOver;
             GridSystem.OnLevelCompleted += HandleLevelCompleted;
+            GridSystem.OnBubblesPopped += HandleBubblesPopped;
         }
 
         private void OnDisable()
         {
             FailureBoundary.OnGameOver -= HandleGameOver;
             GridSystem.OnLevelCompleted -= HandleLevelCompleted;
+            GridSystem.OnBubblesPopped -= HandleBubblesPopped;
         }
 
         private void HandleGameOver()
@@ -44,7 +49,9 @@ namespace _Project.Code.Scripts
 
         private void StartNewGame()
         {
+            Score = 0;
             _levelText.text = "1";
+            _scoreText.text = Score.ToString();
             OnStartNewGame?.Invoke();
         }
 
@@ -55,6 +62,23 @@ namespace _Project.Code.Scripts
             OnStartLevel?.Invoke(nextLevel);
             
             _levelText.text = nextLevel.ToString();
+        }
+
+        private void HandleBubblesPopped(int numBubblesPopped)
+        {
+            if (numBubblesPopped == 0)
+            {
+                return;
+            }
+            
+            int pointsScored = CalculateScore(numBubblesPopped);
+            Score += pointsScored;
+            _scoreText.text = Score.ToString();
+        }
+
+        private int CalculateScore(int numBubblesPopped)
+        {
+            return (int) Mathf.Pow(2, Mathf.Min(numBubblesPopped, _maxBubbleChain));
         }
 
         // ReSharper disable once UnusedMember.Global
