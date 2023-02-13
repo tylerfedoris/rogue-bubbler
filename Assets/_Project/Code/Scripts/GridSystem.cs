@@ -7,6 +7,8 @@ namespace _Project.Code.Scripts
 {
     public class GridSystem : MonoBehaviour
     {
+        public static event Action<int> OnLevelCompleted;
+        
         private struct GridDimensions
         {
             public int MaxRows;
@@ -79,6 +81,7 @@ namespace _Project.Code.Scripts
             Launcher.OnBubblePlaced += HandleBubblePlaced;
             Launcher.OnLaunchLimitReached += ShiftGridDown;
             GameManager.OnStartNewGame += HandleStartNewGame;
+            GameManager.OnStartLevel += InitLevel;
         }
 
         private void OnDisable()
@@ -86,6 +89,7 @@ namespace _Project.Code.Scripts
             Launcher.OnBubblePlaced -= HandleBubblePlaced;
             Launcher.OnLaunchLimitReached -= ShiftGridDown;
             GameManager.OnStartNewGame -= HandleStartNewGame;
+            GameManager.OnStartLevel -= InitLevel;
         }
         
         private void HandleStartNewGame()
@@ -399,7 +403,6 @@ namespace _Project.Code.Scripts
             var bubbleType = targetGridCell.Bubble.GetComponent<Bubble>().BubbleTypeProperty;
             IncrementBubbleTypeInPlay(bubbleType);
             HandleBubbleMatches(targetGridCell, bubbleType);
-            VerifyGrid();
         }
 
         private void HandleBubbleMatches(GridCell targetGridCell, Bubble.BubbleType bubbleType)
@@ -561,8 +564,35 @@ namespace _Project.Code.Scripts
             {
                 _bubbleTypesInPlay.Add(bubbleType, 0);
             }
+
+            CheckIfLevelIsComplete();
         }
 
+        private void CheckIfLevelIsComplete()
+        {
+            var isComplete = true;
+            
+            foreach (var key in BubbleTypesInPlay.Keys)
+            {
+                if (key is Bubble.BubbleType.Blocker or Bubble.BubbleType.Debug)
+                {
+                    continue;
+                }
+
+                if (BubbleTypesInPlay[key] > 0)
+                {
+                    isComplete = false;
+                    break;
+                }
+            }
+
+            if (isComplete)
+            {
+                OnLevelCompleted?.Invoke(_currentLevel);
+            }
+        }
+
+/*
         private void VerifyGrid()
         {
             for (var row = 0; row < _grid.Length; row++)
@@ -577,6 +607,7 @@ namespace _Project.Code.Scripts
                 }
             }
         }
+*/
 
         private void ShiftGridDown()
         {
