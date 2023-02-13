@@ -65,7 +65,7 @@ namespace _Project.Code.Scripts
         private void Start()
         {
             _gridTransform = transform;
-            _gridStartPosition = _gridTransform.position;
+            _gridStartPosition = _gridTransform.localPosition;
         }
 
         // Update is called once per frame
@@ -124,7 +124,7 @@ namespace _Project.Code.Scripts
             ClearGrid();
             InitBubbleTypesInPlay();
 
-            _cellSize = Bubble.BubbleScale;
+            _cellSize = PlayArea.BubbleScale;
             _gridDimensions.MaxRows = _maxRows;
             _gridDimensions.MaxColumns = _gridWidth == GridWidth.Narrow ? _maxNarrowColumns : _maxWideColumns;
             _totalCells = GetTotalCells(_gridDimensions.MaxRows, _gridDimensions.MaxColumns);
@@ -140,10 +140,13 @@ namespace _Project.Code.Scripts
                 for (var column = 0; column < columnCount; column++)
                 {
                     var cell = Instantiate(_cellPrefab, transform);
+                    var cellTransform = cell.transform;
                 
-                    cell.transform.localPosition =
+                    cellTransform.localPosition =
                         new Vector3(column * _cellSize + (Convert.ToInt16(isRowOdd) * (_cellSize / 2f)), row * (-_cellSize + (_cellSize / 10f)),
                             0f);
+                    
+                    cellTransform.localScale = new Vector3(_cellSize, _cellSize, _cellSize);
                 
                     cell.name = "Cell[" + row + ", " + column + "]";
                 
@@ -151,9 +154,6 @@ namespace _Project.Code.Scripts
                 
                     var gridCell = cell.GetComponent<GridCell>();
                     gridCell.GridPosition = new Vector2Int(row, column);
-                
-                    var cellCollider = cell.GetComponent<CircleCollider2D>();
-                    cellCollider.radius = _cellSize / 2f;
                 }
             }
 
@@ -165,16 +165,16 @@ namespace _Project.Code.Scripts
         private void SetBoundaryPositionAndScale()
         {
             var leftBoundaryTransform = _boundaries.LeftBoundary.transform;
-            var leftBoundaryPosition = leftBoundaryTransform.position;
-            leftBoundaryTransform.position = new Vector3(_gridWidth == GridWidth.Narrow ? -2.9f : -4.15f, leftBoundaryPosition.y, leftBoundaryPosition.z);
+            var leftBoundaryPosition = leftBoundaryTransform.localPosition;
+            leftBoundaryTransform.localPosition = new Vector3(_gridWidth == GridWidth.Narrow ? -2.9f : -4.15f, leftBoundaryPosition.y, leftBoundaryPosition.z);
         
             var rightBoundaryTransform = _boundaries.RightBoundary.transform;
-            var rightBoundaryPosition = rightBoundaryTransform.position;
-            rightBoundaryTransform.position = new Vector3(_gridWidth == GridWidth.Narrow ? 2.9f : 4.15f, rightBoundaryPosition.y, rightBoundaryPosition.z);
+            var rightBoundaryPosition = rightBoundaryTransform.localPosition;
+            rightBoundaryTransform.localPosition = new Vector3(_gridWidth == GridWidth.Narrow ? 2.9f : 4.15f, rightBoundaryPosition.y, rightBoundaryPosition.z);
 
             var gridTransform = transform;
-            var gridPosition = gridTransform.position;
-            gridTransform.position = new Vector3(leftBoundaryTransform.position.x + 0.4f, gridPosition.y, gridPosition.z);
+            var gridPosition = gridTransform.localPosition;
+            gridTransform.localPosition = new Vector3(leftBoundaryTransform.localPosition.x + 0.4f, gridPosition.y, gridPosition.z);
         
             var topBoundaryTransform = _boundaries.TopBoundary.transform;
             var topBoundaryScale = topBoundaryTransform.localScale;
@@ -383,7 +383,7 @@ namespace _Project.Code.Scripts
                 return;
             }
 
-            _gridTransform.position = _gridStartPosition;
+            _gridTransform.localPosition = _gridStartPosition;
         
             for (var row = 0; row < _grid.Length; row++)
             {
@@ -580,8 +580,8 @@ namespace _Project.Code.Scripts
 
         private void ShiftGridDown()
         {
-            var gridPosition = _gridTransform.position;
-            _gridTransform.position = new Vector2(gridPosition.x, gridPosition.y - _cellSize);
+            var gridPosition = _gridTransform.localPosition;
+            _gridTransform.localPosition = new Vector2(gridPosition.x, gridPosition.y - _cellSize);
         }
     }
 }

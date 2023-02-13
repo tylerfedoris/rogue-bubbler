@@ -70,7 +70,7 @@ namespace _Project.Code.Scripts
             _launcherTransform = transform;
             _lineRenderer = GetComponent<LineRenderer>();
             _launchDirection = _launcherTransform.up;
-            _collisionRadius = Bubble.BubbleScale / 2f;
+            _collisionRadius = PlayArea.BubbleScale / 2f;
         }
 
         // Update is called once per frame
