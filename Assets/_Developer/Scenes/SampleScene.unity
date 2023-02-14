@@ -16686,6 +16686,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Play Area
       objectReference: {fileID: 0}
+    - target: {fileID: 5107922066581844343, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
+      propertyPath: _renderAimLine
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5970979905422263665, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: m_RootOrder
       value: 4
