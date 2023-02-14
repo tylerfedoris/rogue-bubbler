@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -47,6 +48,8 @@ namespace _Project.Code.Scripts
         [SerializeField] private GameObject _topBoundaryCollider;
     
         [SerializeField][Range(0f, 1f)] private float _chanceToSpawnBlocker = .25f;
+
+        [SerializeField] [Min(0f)] private float _timeBetweenBubblePops = 0.1f;
 
         private const int _maxRows = 15;
         private const int _maxNarrowColumns = 11;
@@ -292,6 +295,12 @@ namespace _Project.Code.Scripts
                     {
                         int cellIndex = remainingEmptyCells[emptyCellIndex];
                         var gridCell = emptyConnectedCells[cellIndex].GetComponent<GridCell>();
+
+                        if (gridCell.GridPosition.x == 0)
+                        {
+                            continue;
+                        }
+                        
                         SpawnBubbleInGridCell(gridCell, ref numBubblesToSpawn, true);
                         newCellsToBranchFrom.Add(gridCell);
                     }
@@ -436,6 +445,11 @@ namespace _Project.Code.Scripts
                 }
             }
 
+            StartCoroutine(PopBubbles(processedCells));
+        }
+
+        private IEnumerator PopBubbles(Stack<GridCell> processedCells)
+        {
             var numBubblesPopped = 0;
             while (processedCells.Count > 0)
             {
@@ -446,10 +460,17 @@ namespace _Project.Code.Scripts
                     DecrementBubbleTypeInPlay(cell.Bubble.GetComponent<Bubble>().BubbleTypeProperty);
                     Destroy(cell.Bubble);
                     numBubblesPopped++;
+                    yield return new WaitForSeconds(_timeBetweenBubblePops);
                 }
 
                 cell.ResetTags();
             }
+
+            if (numBubblesPopped > 0)
+            {
+                CheckIfLevelIsComplete();   
+            }
+            
             OnBubblesPopped?.Invoke(numBubblesPopped);
         }
 
@@ -573,8 +594,6 @@ namespace _Project.Code.Scripts
             {
                 _bubbleTypesInPlay.Add(bubbleType, 0);
             }
-
-            CheckIfLevelIsComplete();
         }
 
         private void CheckIfLevelIsComplete()

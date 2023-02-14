@@ -114,12 +114,14 @@ namespace _Project.Code.Scripts
         {
             InputManager.OnInputRotate += HandleRotate;
             InputManager.OnInputLaunch += HandleLaunch;
+            GridSystem.OnBubblesPopped += AfterBubblesPopped;
         }
 
         private void OnDisable()
         {
             InputManager.OnInputRotate -= HandleRotate;
             InputManager.OnInputLaunch -= HandleLaunch;
+            GridSystem.OnBubblesPopped -= AfterBubblesPopped;
         }
 
         private void ClearDebugCollisionPoints()
@@ -399,7 +401,7 @@ namespace _Project.Code.Scripts
             return null;
         }
 
-        IEnumerator LaunchBubbleCoroutine()
+        private IEnumerator LaunchBubbleCoroutine()
         {
             _launchBubbleCoroutineRunning = true;
             for (var i = 0; i < _collisionPoints.Count; i++)
@@ -447,14 +449,17 @@ namespace _Project.Code.Scripts
                 OnLaunchLimitReached?.Invoke();
                 _numberOfLaunchesSinceLastGridMovement = 0;
             }
-            
+
+            OnBubblePlaced?.Invoke(_targetGridCell);
+        }
+
+        private void AfterBubblesPopped(int numBubblesPopped)
+        {
             _isLaunching = false;
             _currentBubble = null;
             _bubbleCollider = null;
             _bubbleRigidBody = null;
             _launchBubbleCoroutineRunning = false;
-
-            OnBubblePlaced?.Invoke(_targetGridCell);
         }
     }
 }
