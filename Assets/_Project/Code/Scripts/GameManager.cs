@@ -13,7 +13,9 @@ namespace _Project.Code.Scripts
         [SerializeField] private GameObject _gameOverPanel;
         [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private TextMeshProUGUI _scoreText;
-        
+
+        public int Level { get; private set; }
+
         private int Score { get; set; }
 
         // Start is called before the first frame update
@@ -49,19 +51,22 @@ namespace _Project.Code.Scripts
 
         private void StartNewGame()
         {
+            Level = 1;
+            _levelText.text = Level.ToString();
+            
             Score = 0;
-            _levelText.text = "1";
             _scoreText.text = Score.ToString();
+            
             OnStartNewGame?.Invoke();
         }
 
-        private void HandleLevelCompleted(int levelCompleted)
+        private void HandleLevelCompleted()
         {
-            int nextLevel = levelCompleted + 1;
+            Level++;
             
-            OnStartLevel?.Invoke(nextLevel);
+            OnStartLevel?.Invoke(Level);
             
-            _levelText.text = nextLevel.ToString();
+            _levelText.text = Level.ToString();
         }
 
         private void HandleBubblesPopped(int numBubblesPopped)

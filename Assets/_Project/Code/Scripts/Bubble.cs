@@ -9,10 +9,11 @@ namespace _Project.Code.Scripts
         [Serializable]
         public enum BubbleType
         {
-            Blue,
-            Red,
-            Green,
-            Purple,
+            Apple,
+            Cherry,
+            Orange,
+            Pear,
+            Peach,
             Blocker,
             Debug
         }
@@ -20,22 +21,24 @@ namespace _Project.Code.Scripts
         [Serializable]
         private struct BubbleSprites
         {
-            public Sprite Blue;
-            public Sprite Red;
-            public Sprite Green;
-            public Sprite Purple;
+            public Sprite Apple;
+            public Sprite Cherry;
+            public Sprite Orange;
+            public Sprite Pear;
+            public Sprite Peach;
             public Sprite Blocker;
             public Sprite Debug;
-            public Color BlueColor;
-            public Color RedColor;
-            public Color GreenColor;
-            public Color PurpleColor;
+            public Color AppleColor;
+            public Color CherryColor;
+            public Color OrangeColor;
+            public Color PearColor;
+            public Color PeachColor;
             public Color BlockerColor;
             public Color DebugColor;
         }
 
         [SerializeField] private float _blockerScale = 0.75f;
-        [SerializeField] private BubbleType _bubbleType = BubbleType.Blue;
+        [SerializeField] private BubbleType _bubbleType = BubbleType.Apple;
         [SerializeField] private BubbleSprites _bubbleSprites;
         [SerializeField] private List<Collider2D> _collidingObjects = new();
 
@@ -51,21 +54,25 @@ namespace _Project.Code.Scripts
             var spriteRenderer = GetComponent<SpriteRenderer>();
             switch (_bubbleType)
             {
-                case BubbleType.Blue:
-                    spriteRenderer.sprite = _bubbleSprites.Blue;
-                    spriteRenderer.color = _bubbleSprites.BlueColor;
+                case BubbleType.Apple:
+                    spriteRenderer.sprite = _bubbleSprites.Apple;
+                    spriteRenderer.color = _bubbleSprites.AppleColor;
                     break;
-                case BubbleType.Red:
-                    spriteRenderer.sprite = _bubbleSprites.Red;
-                    spriteRenderer.color = _bubbleSprites.RedColor;
+                case BubbleType.Cherry:
+                    spriteRenderer.sprite = _bubbleSprites.Cherry;
+                    spriteRenderer.color = _bubbleSprites.CherryColor;
                     break;
-                case BubbleType.Green:
-                    spriteRenderer.sprite = _bubbleSprites.Green;
-                    spriteRenderer.color = _bubbleSprites.GreenColor;
+                case BubbleType.Orange:
+                    spriteRenderer.sprite = _bubbleSprites.Orange;
+                    spriteRenderer.color = _bubbleSprites.OrangeColor;
                     break;
-                case BubbleType.Purple:
-                    spriteRenderer.sprite = _bubbleSprites.Purple;
-                    spriteRenderer.color = _bubbleSprites.PurpleColor;
+                case BubbleType.Pear:
+                    spriteRenderer.sprite = _bubbleSprites.Pear;
+                    spriteRenderer.color = _bubbleSprites.PearColor;
+                    break;
+                case BubbleType.Peach:
+                    spriteRenderer.sprite = _bubbleSprites.Peach;
+                    spriteRenderer.color = _bubbleSprites.PeachColor;
                     break;
                 case BubbleType.Blocker:
                     spriteRenderer.sprite = _bubbleSprites.Blocker;

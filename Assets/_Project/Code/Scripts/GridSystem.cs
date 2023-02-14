@@ -7,7 +7,7 @@ namespace _Project.Code.Scripts
 {
     public class GridSystem : MonoBehaviour
     {
-        public static event Action<int> OnLevelCompleted;
+        public static event Action OnLevelCompleted;
         public static event Action<int> OnBubblesPopped;
         
         private struct GridDimensions
@@ -31,6 +31,8 @@ namespace _Project.Code.Scripts
             Wide,
             Narrow
         }
+
+        [SerializeField] private GameManager _gameManager;
     
         [SerializeField] private GridWidth _gridWidth = GridWidth.Narrow;
     
@@ -60,8 +62,7 @@ namespace _Project.Code.Scripts
         [SerializeField] private SerializableDictionary<Bubble.BubbleType, int> _bubbleTypesInPlay = new();
     
         public SerializableDictionary<Bubble.BubbleType, int> BubbleTypesInPlay => _bubbleTypesInPlay;
-
-        [SerializeField] private int _currentLevel = 1;
+        
         [SerializeField] private int _maxRowGeneration = 8;
 
         // Start is called before the first frame update
@@ -100,7 +101,8 @@ namespace _Project.Code.Scripts
         
         private void InitLevel(int level)
         {
-            _currentLevel = level;
+            _gridWidth = _gameManager.Level % 5 == 0 ? GridWidth.Wide : GridWidth.Narrow;
+
             GenerateGrid();
         }
 
@@ -186,6 +188,9 @@ namespace _Project.Code.Scripts
             topBoundaryTransform.localScale = new Vector3(topBoundaryScale.x,_gridWidth == GridWidth.Narrow ? 6f : 8.5f, topBoundaryScale.z);
             
             var topBoundaryColliderTransform = _topBoundaryCollider.transform;
+            var topBoundaryColliderPosition = topBoundaryColliderTransform.localPosition;
+            topBoundaryColliderTransform.localPosition = new Vector2(_gridWidth == GridWidth.Narrow ? 2.5f : 3.75f,
+                topBoundaryColliderPosition.y);
             var topBoundaryColliderScale = topBoundaryColliderTransform.localScale;
             topBoundaryColliderTransform.localScale = new Vector3(topBoundaryColliderScale.x,_gridWidth == GridWidth.Narrow ? 6f : 8.5f, topBoundaryColliderScale.z);
         
@@ -363,12 +368,12 @@ namespace _Project.Code.Scripts
 
         private Vector2Int GetSpawnInterval()
         {
-            return _currentLevel switch
+            return _gameManager.Level switch
             {
-                >= 1 and <= 5 => new Vector2Int(Mathf.CeilToInt(_totalCells / 8f), Mathf.CeilToInt(_totalCells / 4f) + 1),
-                >= 6 and <= 10 => new Vector2Int(Mathf.CeilToInt(_totalCells / 6f), Mathf.CeilToInt(_totalCells / 4f) + 1),
-                >= 11 and <= 15 => new Vector2Int(Mathf.CeilToInt(_totalCells / 5f), Mathf.CeilToInt(_totalCells / 3f) + 1),
-                >= 16 and <= 20 => new Vector2Int(Mathf.CeilToInt(_totalCells / 4f), Mathf.CeilToInt(_totalCells / 3f) + 1),
+                >= 1 and <= 5 => new Vector2Int(Mathf.CeilToInt(_totalCells / 10f), Mathf.CeilToInt(_totalCells / 8f) + 1),
+                >= 6 and <= 10 => new Vector2Int(Mathf.CeilToInt(_totalCells / 10f), Mathf.CeilToInt(_totalCells / 6f) + 1),
+                >= 11 and <= 15 => new Vector2Int(Mathf.CeilToInt(_totalCells / 8f), Mathf.CeilToInt(_totalCells / 6f) + 1),
+                >= 16 and <= 20 => new Vector2Int(Mathf.CeilToInt(_totalCells / 8f), Mathf.CeilToInt(_totalCells / 4f) + 1),
                 >= 21 and <= 25 => new Vector2Int(Mathf.CeilToInt(_totalCells / 4f), Mathf.CeilToInt(_totalCells / 2f) + 1),
                 >= 26 and <= 30 => new Vector2Int(Mathf.CeilToInt(_totalCells / 3f), Mathf.CeilToInt(_totalCells / 2f) + 1),
                 >= 31 => new Vector2Int(Mathf.CeilToInt(_totalCells / 2f), Mathf.CeilToInt(_totalCells / 2f) + 1),
@@ -592,7 +597,7 @@ namespace _Project.Code.Scripts
 
             if (isComplete)
             {
-                OnLevelCompleted?.Invoke(_currentLevel);
+                OnLevelCompleted?.Invoke();
             }
         }
 
