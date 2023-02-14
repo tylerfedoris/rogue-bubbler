@@ -16668,7 +16668,7 @@ PrefabInstance:
       objectReference: {fileID: 836491365}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _chanceToSpawnBlocker
-      value: 0.25
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1082558453, guid: d44c564c7e2fc8941a7af4e9095f7ea4, type: 3}
       propertyPath: _timeBetweenBubblePops
