@@ -19,6 +19,9 @@
 # Macro attribute: Files intended for LFS
 [attr]lfs-file filter=lfs diff=lfs merge=lfs -text
 
+# Vendor asset shader files
+**/TextMesh?Pro/Shaders/* linguist-vendored
+
 # Unity files
 *.asmdef unity-yaml-file -linguist-generated
 *.anim unity-yaml-file
