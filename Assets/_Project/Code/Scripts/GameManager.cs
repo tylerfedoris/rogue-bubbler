@@ -19,15 +19,9 @@ namespace _Project.Code.Scripts
         private int Score { get; set; }
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             StartNewGame();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
 
         private void OnEnable()

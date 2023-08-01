@@ -1,26 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class FailureBoundary : MonoBehaviour
+namespace _Project.Code.Scripts
 {
-    public static event Action OnGameOver;
-    
-    // Start is called before the first frame update
-    void Start()
+    public class FailureBoundary : MonoBehaviour
     {
-        
-    }
+        public static event Action OnGameOver;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        OnGameOver?.Invoke();
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            OnGameOver?.Invoke();
+        }
     }
 }

@@ -75,12 +75,6 @@ namespace _Project.Code.Scripts
             _gridStartPosition = _gridTransform.localPosition;
         }
 
-        // Update is called once per frame
-        private void Update()
-        {
-        
-        }
-
         private void OnEnable()
         {
             Launcher.OnBubblePlaced += HandleBubblePlaced;
